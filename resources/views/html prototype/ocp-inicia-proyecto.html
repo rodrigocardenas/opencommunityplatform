@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicia Tu Proyecto - OCP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            padding: 25px;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+        }
+        
+        .progress-container {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-fill {
+            background: white;
+            height: 100%;
+            width: 33%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .step {
+            text-align: center;
+            flex: 1;
+            opacity: 0.7;
+            font-size: 14px;
+        }
+        
+        .step.active {
+            opacity: 1;
+            font-weight: bold;
+        }
+        
+        .form-content {
+            padding: 40px;
+        }
+        
+        .step-indicator {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            display: inline-block;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .category-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .category-card:hover {
+            border-color: #4CAF50;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .category-card.selected {
+            border-color: #4CAF50;
+            background: #e8f5e8;
+        }
+        
+        .category-card .emoji {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .category-card .title {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .collaborators-section {
+            margin-top: 25px;
+        }
+        
+        .collaborator-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .collaborator-input input {
+            flex: 1;
+        }
+        
+        .add-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .add-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .collaborator-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .collaborator-tag {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .remove-collaborator {
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+        }
+        
+        .btn-outline:hover {
+            background: #4CAF50;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .help-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+        
+        .required {
+            color: #e74c3c;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .form-content {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .steps {
+                font-size: 12px;
+            }
+        }
+        
+        .offline-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ff9800;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 14px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .offline-indicator.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span class="icon">🚀</span>
+                Inicia Tu Proyecto
+            </h1>
+            <p>Comparte tu idea y construyamos juntos el futuro de nuestra comunidad</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="steps">
+                    <div class="step active">1. Información Básica</div>
+                    <div class="step">2. Detalles y Recursos</div>
+                    <div class="step">3. Colaboración</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-content">
+            <div class="step-indicator">
+                Paso 1 de 3: Información Básica
+            </div>
+            
+            <form id="projectForm">
+                <div class="form-group">
+                    <label for="titulo">Título del Proyecto <span class="required">*</span></label>
+                    <input type="text" id="titulo" name="titulo" required placeholder="Ej: Huerto Comunitario San Pedro">
+                    <div class="help-text">Un nombre claro y atractivo que describa tu proyecto</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="descripcion">Descripción <span class="required">*</span></label>
+                    <textarea id="descripcion" name="descripcion" required placeholder="Cuéntanos sobre tu idea de proyecto. ¿Qué problema resuelve? ¿Cómo beneficiará a la comunidad?"></textarea>
+                    <div class="help-text">Describe tu proyecto de forma simple y clara para que todos puedan entenderlo</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Categoría del Proyecto <span class="required">*</span></label>
+                    <div class="category-grid">
+                        <div class="category-card" data-category="economia">
+                            <span class="emoji">💰</span>
+                            <div class="title">Economía Local</div>
+                        </div>
+                        <div class="category-card" data-category="salud">
+                            <span class="emoji">🏥</span>
+                            <div class="title">Salud</div>
+                        </div>
+                        <div class="category-card" data-category="educacion">
+                            <span class="emoji">📚</span>
+                            <div class="title">Educación</div>
+                        </div>
+                        <div class="category-card" data-category="ambiente">
+                            <span class="emoji">🌱</span>
+                            <div class="title">Medio Ambiente</div>
+                        </div>
+                        <div class="category-card" data-category="cultura">
+                            <span class="emoji">🎭</span>
+                            <div class="title">Cultura</div>
+                        </div>
+                        <div class="category-card" data-category="infraestructura">
+                            <span class="emoji">🏗️</span>
+                            <div class="title">Infraestructura</div>
+                        </div>
+                    </div>
+                    <div class="help-text">Selecciona la categoría que mejor describa tu proyecto</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="objetivos">Objetivos Principales</label>
+                    <textarea id="objetivos" name="objetivos" placeholder="¿Qué quieres lograr con este proyecto? Lista los principales objetivos..."></textarea>
+                    <div class="help-text">Define metas claras y alcanzables para tu proyecto</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="recursos">Recursos Necesarios</label>
+                    <textarea id="recursos" name="recursos" placeholder="¿Qué necesitas para hacer realidad este proyecto? (materiales, herramientas, espacios, conocimientos, etc.)"></textarea>
+                    <div class="help-text">Lista todo lo que necesitarás para desarrollar el proyecto</div>
+                </div>
+                
+                <div class="collaborators-section">
+                    <label>Colaboradores Invitados</label>
+                    <div class="collaborator-input">
+                        <input type="text" id="collaboratorInput" placeholder="Nombre del colaborador">
+                        <button type="button" class="add-btn" onclick="addCollaborator()">Agregar</button>
+                    </div>
+                    <div class="help-text">Invita a vecinos que puedan colaborar con tu proyecto</div>
+                    <div class="collaborator-list" id="collaboratorList"></div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                        💾 Guardar Borrador
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="previousStep()">
+                        ← Anterior
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()">
+                        Siguiente →
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="offline-indicator" id="offlineIndicator">
+        📡 Sin conexión - Los datos se guardan localmente
+    </div>
+    
+    <script>
+        let currentStep = 1;
+        let selectedCategory = '';
+        let collaborators = [];
+        
+        // Simulación de detección offline
+        function checkConnection() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (Math.random() < 0.3) { // 30% chance de mostrar modo offline
+                indicator.classList.add('show');
+            } else {
+                indicator.classList.remove('show');
+            }
+        }
+        
+        // Verificar conexión cada 10 segundos
+        setInterval(checkConnection, 10000);
+        
+        // Manejar selección de categorías
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedCategory = this.dataset.category;
+            });
+        });
+        
+        // Agregar colaboradores
+        function addCollaborator() {
+            const input = document.getElementById('collaboratorInput');
+            const name = input.value.trim();
+            
+            if (name && !collaborators.includes(name)) {
+                collaborators.push(name);
+                input.value = '';
+                updateCollaboratorList();
+            }
+        }
+        
+        function removeCollaborator(name) {
+            collaborators = collaborators.filter(c => c !== name);
+            updateCollaboratorList();
+        }
+        
+        function updateCollaboratorList() {
+            const list = document.getElementById('collaboratorList');
+            list.innerHTML = '';
+            
+            collaborators.forEach(name => {
+                const tag = document.createElement('div');
+                tag.className = 'collaborator-tag';
+                tag.innerHTML = `
+                    👤 ${name} 
+                    <span class="remove-collaborator" onclick="removeCollaborator('${name}')">×</span>
+                `;
+                list.appendChild(tag);
+            });
+        }
+        
+        // Navegación entre pasos
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep < 3) {
+                    currentStep++;
+                    updateStep();
+                } else {
+                    submitProject();
+                }
+            }
+        }
+        
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStep();
+            }
+        }
+        
+        function updateStep() {
+            const progressFill = document.getElementById('progressFill');
+            const stepIndicator = document.querySelector('.step-indicator');
+            
+            // Actualizar barra de progreso
+            progressFill.style.width = `${(currentStep / 3) * 100}%`;
+            
+            // Actualizar indicadores de paso
+            document.querySelectorAll('.step').forEach((step, index) => {
+                if (index + 1 <= currentStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+            
+            // Actualizar texto del paso
+            const stepTexts = [
+                'Paso 1 de 3: Información Básica',
+                'Paso 2 de 3: Detalles y Recursos',
+                'Paso 3 de 3: Revisión y Envío'
+            ];
+            stepIndicator.textContent = stepTexts[currentStep - 1];
+            
+            // Simular cambio de contenido (en una app real, cambiaríamos el contenido del formulario)
+            if (currentStep === 3) {
+                document.querySelector('.btn-primary').innerHTML = '🚀 Enviar para Revisión';
+            } else {
+                document.querySelector('.btn-primary').innerHTML = 'Siguiente →';
+            }
+        }
+        
+        function validateCurrentStep() {
+            if (currentStep === 1) {
+                const titulo = document.getElementById('titulo').value.trim();
+                const descripcion = document.getElementById('descripcion').value.trim();
+                
+                if (!titulo || !descripcion || !selectedCategory) {
+                    alert('Por favor completa todos los campos obligatorios');
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        function saveDraft() {
+            // Simular guardado de borrador
+            const formData = new FormData(document.getElementById('projectForm'));
+            const data = Object.fromEntries(formData);
+            data.category = selectedCategory;
+            data.collaborators = collaborators;
+            
+            // En una app real, esto se guardaría en localStorage o se enviaría al servidor
+            console.log('Borrador guardado:', data);
+            
+            // Mostrar confirmación visual
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Guardado';
+            btn.style.background = '#4CAF50';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+        
+        function submitProject() {
+            // Simular envío del proyecto
+            alert('¡Proyecto enviado para revisión comunitaria! 🎉\n\nTu proyecto será visible para la comunidad y podrán colaborar contigo.');
+        }
+        
+        // Manejar Enter en el input de colaboradores
+        document.getElementById('collaboratorInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addCollaborator();
+            }
+        });
+        
+        // Inicializar
+        checkConnection();
+    </script>
+</body>
+</html>

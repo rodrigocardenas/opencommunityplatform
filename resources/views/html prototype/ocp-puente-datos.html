@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Puente de Datos - Dashboard territorial de Open Community Platform">
+    <title>Puente de Datos - OCP Dashboard</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet Map CSS (FASE 2) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
+    
+    <!-- AOS - Animate On Scroll -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    
+    <!-- Toastr Notifications -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-primary: #4A90E2;
+            --color-primary-dark: #2E5C8A;
+            --color-primary-light: #E8EEF9;
+            --color-secondary: #3A8B56;
+            --color-secondary-dark: #2D6B43;
+            --color-accent-orange: #D97706;
+            --color-accent-purple: #7C3AED;
+            --color-danger: #DC2626;
+            --color-warning: #F59E0B;
+            --color-success: #10B981;
+            --color-bg: #0F1419;
+            --color-bg-secondary: #1A1F2E;
+            --color-bg-card: #1E2639;
+            --color-bg-hover: #252E42;
+            --color-text-dark: #E8EAED;
+            --color-text-light: #A0A7B0;
+            --color-text-muted: #6B7280;
+            --color-border: #2D3748;
+            --color-border-light: #3F4860;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
+            --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0A0E14 0%, #1A1F2E 25%, #2E2A3F 50%, #1A1F2E 75%, #0A0E14 100%);
+            background-attachment: fixed;
+            color: var(--color-text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--color-text-dark);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+        
+        /* ===================== LAYOUT PRINCIPAL ===================== */
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* SIDEBAR NAVIGATION */
+        .sidebar {
+            width: 280px;
+            background: var(--color-bg-secondary);
+            color: var(--color-text-dark);
+            padding: 2rem 1rem;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transition: var(--transition);
+            border-right: 1px solid var(--color-border);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .sidebar-logo {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .sidebar-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+        
+        .sidebar-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--color-text-dark);
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .nav-item {
+            margin: 0;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.75rem 1rem;
+            color: var(--color-text-light);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            background: var(--color-bg-hover);
+            color: var(--color-primary);
+            transform: translateX(4px);
+        }
+        
+        .nav-link.active {
+            background: var(--color-primary);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+        
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: white;
+            border-radius: 0 2px 2px 0;
+        }
+        
+        .nav-icon {
+            width: 24px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .nav-text {
+            font-size: 0.95rem;
+            flex: 1;
+        }
+        
+        /* MAIN CONTENT */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* HEADER */
+        .dashboard-header {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-dark);
+            padding: 0.75rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0;
+            gap: 1rem;
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header-title h1 {
+            font-size: 1.4rem;
+            margin: 0;
+            color: var(--color-text-dark);
+            font-weight: 600;
+        }
+        
+        .header-title-emoji {
+            display: none;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .last-sync {
+            background: var(--color-bg-hover);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            border: 1px solid var(--color-border);
+        }
+        
+        .sync-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--color-success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* AVATAR/PROFILE BUTTON */
+        .avatar-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--color-bg-hover);
+            border: 1px solid var(--color-border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--color-text-dark);
+            font-size: 0.9rem;
+        }
+        
+        .avatar-profile:hover {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .avatar-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent-purple) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .avatar-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .avatar-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            line-height: 1;
+        }
+        
+        .avatar-role {
+            font-size: 0.75rem;
+            color: var(--color-text-light);
+        }
+        
+        .avatar-profile:hover .avatar-role {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* FILTERS BAR */
+        .filters-section {
+            background: var(--color-bg-secondary);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--color-text-light);
+            min-width: 80px;
+        }
+        
+        .filter-select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            background: var(--color-bg-card);
+            font-size: 0.9rem;
+            min-width: 140px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--color-text-dark);
+        }
+        
+        .filter-select:hover {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+        
+        .filter-reset {
+            padding: 0.5rem 1rem;
+            background: var(--color-bg-hover);
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--color-text-light);
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .filter-reset:hover {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+        
+        /* DASHBOARD CONTENT */
+        .dashboard-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background: var(--color-bg);
+        }
+        
+        /* KPI CARDS SECTION */
+        .kpi-section {
+            margin-bottom: 2rem;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .kpi-card {
+            background: var(--color-bg-card);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--color-primary);
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-primary);
+            background: var(--color-bg-hover);
+        }
+        
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        
+        .kpi-icon {
+            font-size: 1.8rem;
+        }
+        
+        .kpi-trend {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 1px solid;
+        }
+        
+        .kpi-trend.positive {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-success);
+            border-color: var(--color-success);
+        }
+        
+        .kpi-trend.negative {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--color-danger);
+            border-color: var(--color-danger);
+        }
+        
+        .kpi-label {
+            font-size: 0.85rem;
+            color: var(--color-text-light);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 0.75rem;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .kpi-comparison {
+            font-size: 0.85rem;
+            color: var(--color-text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* CHARTS GRID */
+        .charts-section {
+            margin-bottom: 2rem;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+        
+        .chart-card {
+            background: var(--color-bg-card);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        .chart-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-text-dark);
+        }
+        
+        .chart-menu {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--color-bg-hover);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            color: var(--color-text-light);
+            border: 1px solid var(--color-border);
+        }
+        
+        .chart-menu:hover {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            max-width: 100%;
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.05) 0%, rgba(58, 139, 86, 0.05) 100%);
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+            box-sizing: border-box;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        .chart-container canvas {
+            max-width: 100% !important;
+            max-height: 250px !important;
+            display: block !important;
+        }
+        
+        /* MAP STYLES */
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            margin: 1rem 0;
+            z-index: 1;
+            border: 1px solid var(--color-border);
+        }
+        
+        .leaflet-control-layers {
+            border-radius: 8px !important;
+            box-shadow: var(--shadow-md) !important;
+            background: var(--color-bg-card) !important;
+            border: 1px solid var(--color-border) !important;
+        }
+        
+        .leaflet-control-scale {
+            border-radius: 8px !important;
+            background: var(--color-bg-card) !important;
+            border: 1px solid var(--color-border) !important;
+        }
+        
+        .leaflet-filter-control {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            z-index: 400 !important;
+        }
+        
+        .marker-demographic {
+            filter: drop-shadow(0 2px 4px rgba(74, 144, 226, 0.4));
+        }
+        
+        .marker-agriculture {
+            filter: drop-shadow(0 2px 4px rgba(58, 139, 86, 0.4));
+        }
+        
+        .marker-environment {
+            filter: drop-shadow(0 2px 4px rgba(217, 119, 6, 0.4));
+        }
+        
+        .marker-infrastructure {
+            filter: drop-shadow(0 2px 4px rgba(124, 58, 237, 0.4));
+        }
+        
+        .leaflet-popup {
+            border-radius: 8px !important;
+        }
+        
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px !important;
+            box-shadow: var(--shadow-md) !important;
+            background: var(--color-bg-card) !important;
+            color: var(--color-text-dark) !important;
+        }
+        
+        /* ALERTS SECTION */
+        .alerts-section {
+            margin-bottom: 2rem;
+        }
+        
+        .alert-card {
+            background: var(--color-bg-card);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid;
+            border: 1px solid var(--color-border);
+            border-left-width: 4px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            transition: var(--transition);
+        }
+        
+        .alert-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateX(4px);
+        }
+        
+        .alert-card.info {
+            border-left-color: var(--color-primary);
+        }
+        
+        .alert-card.success {
+            border-left-color: var(--color-success);
+        }
+        
+        .alert-card.warning {
+            border-left-color: var(--color-warning);
+        }
+        
+        .alert-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .alert-content h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            color: var(--color-text-dark);
+        }
+        
+        .alert-content p {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+            margin: 0;
+        }
+        
+        /* ACTION BUTTONS */
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 2rem;
+            background: var(--color-bg-card);
+            border-radius: 10px;
+            margin: 2rem 0;
+            border: 1px solid var(--color-border);
+        }
+        
+        .btn-custom {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary-custom {
+            background: var(--color-primary);
+            color: white;
+            border: 1px solid var(--color-primary);
+        }
+        
+        .btn-primary-custom:hover {
+            background: var(--color-primary-dark);
+            border-color: var(--color-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+        
+        .btn-secondary-custom {
+            background: var(--color-bg-hover);
+            color: var(--color-text-light);
+            border: 1px solid var(--color-border);
+        }
+        
+        .btn-secondary-custom:hover {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+        
+        /* DATA TABLE */
+        .datatable-section {
+            margin-bottom: 2rem;
+        }
+        
+        .data-table-container {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .data-table-container table {
+            color: var(--color-text-dark);
+        }
+        
+        .data-table-container thead {
+            background: var(--color-bg-secondary);
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .data-table-container th {
+            color: var(--color-text-light);
+            font-weight: 600;
+            padding: 1rem !important;
+        }
+        
+        .data-table-container td {
+            padding: 0.75rem 1rem !important;
+            border-color: var(--color-border) !important;
+        }
+        
+        .data-table-container tbody tr {
+            transition: var(--transition);
+        }
+        
+        .data-table-container tbody tr:hover {
+            background: var(--color-bg-hover) !important;
+        }
+        
+        /* FOOTER */
+        .dashboard-footer {
+            background: var(--color-bg-secondary);
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            color: var(--color-text-light);
+            font-size: 0.9rem;
+        }
+        
+        .data-sources {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+        
+        .source-badge {
+            background: var(--color-primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        /* LOADING STATE */
+        .loading-spinner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--color-border);
+            border-top: 3px solid var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* TEXT UTILITIES */
+        .text-muted {
+            color: var(--color-text-muted) !important;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 250px;
+            }
+            
+            .main-wrapper {
+                margin-left: 250px;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 280px;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                transform: translateX(-100%);
+                position: fixed;
+                left: 0;
+                top: 0;
+                z-index: 999;
+            }
+            
+            .sidebar.active {
+                width: 280px;
+                transform: translateX(0);
+                box-shadow: 2px 0 20px rgba(0, 0, 0, 0.5);
+            }
+            
+            .main-wrapper {
+                margin-left: 0;
+            }
+            
+            .dashboard-header {
+                padding: 0.75rem 1rem;
+            }
+            
+            .header-top {
+                flex-direction: column;
+                margin-bottom: 0;
+                gap: 0.5rem;
+            }
+            
+            .filters-section {
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-content {
+                padding: 1rem;
+            }
+            
+            .kpi-value {
+                font-size: 1.8rem;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+            }
+            
+            .btn-custom {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+            
+            .last-sync {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .avatar-profile {
+                padding: 0.5rem 0.75rem;
+            }
+            
+            .avatar-text {
+                display: none;
+            }
+            
+            .avatar-circle {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+        
+        /* ANIMATIONS */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        [data-aos] {
+            opacity: 0;
+            animation: slideInUp 0.6s ease-out forwards;
+        }
+        
+        /* Utility Classes */
+        .text-muted {
+            color: var(--color-text-light);
+        }
+        
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .mt-3 {
+            margin-top: 1rem;
+        }
+        
+        .gap-1 {
+            gap: 0.5rem;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="assets/img/logo.svg" alt="OCP Logo">
+                </div>
+                <div class="sidebar-title">OCP</div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-page="dashboard">
+                        <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-map" title="Mapa - Próximamente">
+                        <span class="nav-icon"><i class="fas fa-map"></i></span>
+                        <span class="nav-text">Mapa Territorial</span>
+                        <span style="font-size: 0.7rem; background: rgba(255,255,255,0.3); padding: 2px 6px; border-radius: 4px; margin-left: auto;">F2</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-data" title="Datos - Próximamente">
+                        <span class="nav-icon"><i class="fas fa-database"></i></span>
+                        <span class="nav-text">Datos Territoriales</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-reports" title="Reportes - Próximamente">
+                        <span class="nav-icon"><i class="fas fa-file-pdf"></i></span>
+                        <span class="nav-text">Reportes</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-alerts" title="Alertas">
+                        <span class="nav-icon"><i class="fas fa-bell"></i></span>
+                        <span class="nav-text">Alertas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-settings" title="Configuración">
+                        <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                        <span class="nav-text">Configuración</span>
+                    </a>
+                </li>
+            </nav>
+        </aside>
+        
+        <!-- MAIN CONTENT -->
+        <div class="main-wrapper">
+            <!-- HEADER -->
+            <header class="dashboard-header">
+                <div class="header-top">
+                    <div class="header-title">
+                        <span class="header-title-emoji">🌉</span>
+                        <h1>Puente de Datos</h1>
+                    </div>
+                    <div class="header-actions">
+                        <div class="last-sync">
+                            <span class="sync-indicator"></span>
+                            <span>En línea</span>
+                        </div>
+                        <button class="avatar-profile" title="Mi perfil">
+                            <div class="avatar-circle">RC</div>
+                            <div class="avatar-text">
+                                <div class="avatar-name">Rodrigo C.</div>
+                                <div class="avatar-role">Administrador</div>
+                            </div>
+                        </button>
+                        <button class="chart-menu" id="mobile-menu-toggle" style="display: none;">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- FILTERS -->
+            <div class="filters-section">
+                <div class="filter-group">
+                    <span class="filter-label">📅 Período:</span>
+                    <select class="filter-select" id="timeFilter" onchange="updateDashboard()">
+                        <option value="month">Último mes</option>
+                        <option value="quarter">Último trimestre</option>
+                        <option value="year" selected>Último año</option>
+                        <option value="all">Todo el tiempo</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <span class="filter-label">🏷️ Categoría:</span>
+                    <select class="filter-select" id="categoryFilter" onchange="updateDashboard()">
+                        <option value="all" selected>Todas</option>
+                        <option value="demographic">Demográfico</option>
+                        <option value="agriculture">Agricultura</option>
+                        <option value="environment">Medio Ambiente</option>
+                        <option value="infrastructure">Infraestructura</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <span class="filter-label">📍 Sector:</span>
+                    <select class="filter-select" id="sectorFilter" onchange="updateDashboard()">
+                        <option value="all" selected>Todos</option>
+                        <option value="north">Sector Norte</option>
+                        <option value="center">Sector Centro</option>
+                        <option value="south">Sector Sur</option>
+                        <option value="valley">Valle</option>
+                    </select>
+                </div>
+                
+                <button class="filter-reset" onclick="resetFilters()">
+                    <i class="fas fa-redo"></i> Reiniciar
+                </button>
+            </div>
+            
+            <!-- DASHBOARD CONTENT -->
+            <main class="dashboard-content">
+                <!-- KPI CARDS -->
+                <section class="kpi-section">
+                    <h2 style="margin-bottom: 1.5rem;">Indicadores Clave</h2>
+                    <div class="kpi-grid" data-aos="fade-up">
+                        <div class="kpi-card" data-aos="zoom-in" data-aos-delay="0">
+                            <div class="kpi-header">
+                                <div class="kpi-icon">👥</div>
+                                <span class="kpi-trend positive">↑ +3.2%</span>
+                            </div>
+                            <div class="kpi-label">Población Total</div>
+                            <div class="kpi-value">2,847</div>
+                            <div class="kpi-comparison">vs. año anterior: +87 hab.</div>
+                        </div>
+                        
+                        <div class="kpi-card" data-aos="zoom-in" data-aos-delay="100">
+                            <div class="kpi-header">
+                                <div class="kpi-icon">🏘️</div>
+                                <span class="kpi-trend positive">↑ +1.5%</span>
+                            </div>
+                            <div class="kpi-label">Familias</div>
+                            <div class="kpi-value">847</div>
+                            <div class="kpi-comparison">Promedio 3.4 personas/familia</div>
+                        </div>
+                        
+                        <div class="kpi-card" data-aos="zoom-in" data-aos-delay="200">
+                            <div class="kpi-header">
+                                <div class="kpi-icon">🌾</div>
+                                <span class="kpi-trend positive">↑ +8.3%</span>
+                            </div>
+                            <div class="kpi-label">Producción Agrícola</div>
+                            <div class="kpi-value">4,490</div>
+                            <div class="kpi-comparison">Toneladas este año</div>
+                        </div>
+                        
+                        <div class="kpi-card" data-aos="zoom-in" data-aos-delay="300">
+                            <div class="kpi-header">
+                                <div class="kpi-icon">💧</div>
+                                <span class="kpi-trend negative">↓ -15%</span>
+                            </div>
+                            <div class="kpi-label">Recursos Hídricos</div>
+                            <div class="kpi-value">462</div>
+                            <div class="kpi-comparison">Litros/día promedio</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- CHARTS SECTION (FASE 3) -->
+                <section class="charts-section">
+                    <h2 style="margin-bottom: 1.5rem;">Análisis de Datos</h2>
+                    <div class="charts-grid">
+                        <!-- Chart 1: Line Chart -->
+                        <div class="chart-card" data-aos="fade-up">
+                            <div class="chart-header">
+                                <h3 class="chart-title">
+                                    <i class="fas fa-chart-line"></i> Evolución Demográfica
+                                </h3>
+                                <button class="chart-menu"><i class="fas fa-ellipsis-v"></i></button>
+                            </div>
+                            <div class="chart-container" id="chart-demo">
+                                <span class="text-muted">Chart.js (FASE 3) - En desarrollo...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart 2: Bar Chart -->
+                        <div class="chart-card" data-aos="fade-up" data-aos-delay="100">
+                            <div class="chart-header">
+                                <h3 class="chart-title">
+                                    <i class="fas fa-chart-bar"></i> Producción por Sector
+                                </h3>
+                                <button class="chart-menu"><i class="fas fa-ellipsis-v"></i></button>
+                            </div>
+                            <div class="chart-container" id="chart-production">
+                                <span class="text-muted">Chart.js (FASE 3) - En desarrollo...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart 3: Pie Chart -->
+                        <div class="chart-card" data-aos="fade-up" data-aos-delay="200">
+                            <div class="chart-header">
+                                <h3 class="chart-title">
+                                    <i class="fas fa-chart-pie"></i> Uso de Suelo
+                                </h3>
+                                <button class="chart-menu"><i class="fas fa-ellipsis-v"></i></button>
+                            </div>
+                            <div class="chart-container" id="chart-land">
+                                <span class="text-muted">Chart.js (FASE 3) - En desarrollo...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart 4: Area Chart -->
+                        <div class="chart-card" data-aos="fade-up" data-aos-delay="300">
+                            <div class="chart-header">
+                                <h3 class="chart-title">
+                                    <i class="fas fa-water"></i> Recursos Hídricos
+                                </h3>
+                                <button class="chart-menu"><i class="fas fa-ellipsis-v"></i></button>
+                            </div>
+                            <div class="chart-container" id="chart-water">
+                                <span class="text-muted">Chart.js (FASE 3) - En desarrollo...</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- MAPA TERRITORIAL (FASE 2) -->
+                <section class="charts-section">
+                    <h2 style="margin-bottom: 1.5rem;">Visualización Territorial</h2>
+                    <div class="chart-card" data-aos="fade-up">
+                        <div class="chart-header">
+                            <h3 class="chart-title">
+                                <i class="fas fa-map-pin"></i> Mapa Territorial Interactivo
+                            </h3>
+                            <button class="chart-menu"><i class="fas fa-ellipsis-v"></i></button>
+                        </div>
+                        <div id="map"></div>
+                        <p class="text-muted text-center" style="font-size: 0.85rem; margin-top: 1rem;">
+                            <strong>Mapa Territorial Interactivo:</strong> Visualiza puntos de datos geoespaciales, capas temáticas (demográfico, agrícola, ambiental, infraestructura) y sectores territoriales. Haz click en los markers para más información.
+                        </p>
+                    </div>
+                </section>
+                
+                <!-- ALERTS SECTION -->
+                <section class="alerts-section">
+                    <h2 style="margin-bottom: 1.5rem;">Alertas e Insights</h2>
+                    
+                    <div data-aos="fade-up">
+                        <div class="alert-card info">
+                            <div class="alert-icon"><i class="fas fa-lightbulb"></i></div>
+                            <div class="alert-content">
+                                <h4>Insight: Crecimiento Poblacional</h4>
+                                <p>La población ha crecido 3.2% en el último año. Revisar demanda de servicios e infraestructura.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-card warning">
+                            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="alert-content">
+                                <h4>Alerta: Escasez Hídrica</h4>
+                                <p>Recursos hídricos bajaron 15% vs. año anterior. Se recomienda revisar estrategias de riego.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-card success">
+                            <div class="alert-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="alert-content">
+                                <h4>Logro: Producción Agrícola</h4>
+                                <p>La producción agrícola aumentó 8.3%. El sector oeste lidera con 1,580 toneladas anuales.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- DATA TABLE SECTION (FASE 5) -->
+                <section class="datatable-section" data-aos="fade-up">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h2>📊 Datos Territoriales</h2>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-sm btn-outline-success" onclick="window.dataTable.exportAllData('csv')" title="Descargar CSV">
+                                <i class="fas fa-file-csv"></i> CSV
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="window.dataTable.exportAllData('excel')" title="Descargar Excel">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="window.dataTable.exportAllData('pdf')" title="Descargar PDF">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
+                        </div>
+                    </div>
+                    <div class="data-table-container" id="territorioDataTable" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 1rem;">
+                        <p class="text-muted text-center">Cargando datos...</p>
+                    </div>
+                </section>
+                
+                <!-- ACTION BUTTONS -->
+                <div class="action-bar">
+                    <button class="btn-custom btn-primary-custom" onclick="generateReport()">
+                        <i class="fas fa-file-export"></i> Descargar Reporte
+                    </button>
+                    <button class="btn-custom btn-primary-custom" onclick="exportData()">
+                        <i class="fas fa-download"></i> Exportar Datos CSV
+                    </button>
+                    <button class="btn-custom btn-secondary-custom" onclick="shareView()">
+                        <i class="fas fa-share-alt"></i> Compartir Vista
+                    </button>
+                </div>
+            </main>
+            
+            <!-- FOOTER -->
+            <footer class="dashboard-footer">
+                <p>Puente de Datos - Open Community Platform | Última sincronización: Hace 2 horas</p>
+                <div class="data-sources">
+                    <span class="source-badge">📍 Sistema de Registros Local</span>
+                    <span class="source-badge">📊 DANE</span>
+                    <span class="source-badge">🌍 Datos Abiertos Territorial</span>
+                    <span class="source-badge">👥 Encuestas Comunitarias</span>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Leaflet JS (FASE 2) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    
+    <!-- Chart.js (FASE 3) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- AOS JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    
+    <!-- MAP SCRIPT (FASE 2) -->
+    <script src="assets/js/map.js"></script>
+    
+    <!-- CHARTS SCRIPT (FASE 3) -->
+    <script src="assets/js/charts.js"></script>
+    
+    <!-- FILTERS SCRIPT (FASE 4) -->
+    <script src="assets/js/filters.js"></script>
+    
+    <!-- DATA TABLE SCRIPT (FASE 5) -->
+    <script src="assets/js/datatable.js"></script>
+    
+    <!-- CUSTOM SCRIPTS -->
+    <script>
+        // Configuración de Toastr
+        toastr.options = {
+            "timeOut": 4000,
+            "positionClass": "toast-top-right",
+            "closeButton": true,
+            "progressBar": true
+        };
+        
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            offset: 100,
+            once: true
+        });
+        
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        });
+        
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                
+                if (!page) {
+                    toastr.info('Sección en desarrollo para la siguiente fase');
+                    return;
+                }
+                
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Close sidebar on mobile
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('active');
+                }
+            });
+        });
+        
+        // Avatar/Profile button
+        document.querySelector('.avatar-profile').addEventListener('click', function(e) {
+            e.preventDefault();
+            toastr.info('👤 Rodrígo Cárdenas - Administrador del Sistema', 'Perfil');
+        });
+        
+        // Filter functions
+        function updateDashboard() {
+            const timeFilter = document.getElementById('timeFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const sectorFilter = document.getElementById('sectorFilter').value;
+            
+            toastr.info(`Actualizando: ${timeFilter} | ${categoryFilter} | ${sectorFilter}`);
+            // Aquí iría lógica de actualización de datos
+        }
+        
+        function resetFilters() {
+            document.getElementById('timeFilter').value = 'year';
+            document.getElementById('categoryFilter').value = 'all';
+            document.getElementById('sectorFilter').value = 'all';
+            toastr.success('Filtros reiniciados');
+            updateDashboard();
+        }
+        
+        // Action buttons
+        function generateReport() {
+            toastr.info('Generando reporte PDF...');
+            setTimeout(() => toastr.success('Reporte descargado'), 2000);
+        }
+        
+        function exportData() {
+            toastr.info('Exportando datos CSV...');
+            setTimeout(() => toastr.success('Datos exportados'), 2000);
+        }
+        
+        function shareView() {
+            toastr.info('Enlace compartible copiado al portapapeles');
+        }
+        
+        // Responsive menu button visibility
+        function handleResponsive() {
+            const mobileBtn = document.getElementById('mobile-menu-toggle');
+            if (window.innerWidth <= 768) {
+                mobileBtn.style.display = 'flex';
+            } else {
+                mobileBtn.style.display = 'none';
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        }
+        
+        window.addEventListener('resize', handleResponsive);
+        handleResponsive();
+        
+        // Log initialization
+        console.log('✅ Dashboard iniciado correctamente');
+        console.log('🔄 FASE 1: Estructura base completada');
+        console.log('⏳ FASE 2: Mapa Leaflet - Próxima');
+        console.log('⏳ FASE 3: Gráficos Chart.js - Próxima');
+    </script>
+</body>
+</html>

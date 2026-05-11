@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antenas Comunitarias - OCP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            padding: 20px;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 15px;
+        }
+        
+        .sync-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4CAF50;
+        }
+        
+        .sync-indicator.offline {
+            background: #ff9800;
+        }
+        
+        .sync-indicator.pending {
+            background: #2196F3;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .location-bar {
+            background: rgba(255,255,255,0.15);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .main-content {
+            padding: 25px;
+            padding-bottom: 100px;
+        }
+        
+        .data-type-selector {
+            margin-bottom: 30px;
+        }
+        
+        .data-type-selector h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .type-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+            text-align: center;
+        }
+        
+        .type-card:hover {
+            border-color: #FF6B35;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .type-card.selected {
+            border-color: #FF6B35;
+            background: #fff3f0;
+        }
+        
+        .type-card .icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .type-card .title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .type-card .description {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .data-form {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            display: none;
+        }
+        
+        .data-form.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+        }
+        
+        .form-section h3 {
+            font-size: 16px;
+            color: #FF6B35;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #FF6B35;
+            box-shadow: 0 3px 10px rgba(255, 107, 53, 0.2);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .checkbox-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+        
+        .media-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px dashed #e0e0e0;
+        }
+        
+        .media-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .media-btn {
+            padding: 15px;
+            border: 2px solid #FF6B35;
+            border-radius: 10px;
+            background: transparent;
+            color: #FF6B35;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .media-btn:hover {
+            background: #FF6B35;
+            color: white;
+        }
+        
+        .media-btn.active {
+            background: #FF6B35;
+            color: white;
+        }
+        
+        .photo-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .photo-item {
+            position: relative;
+            aspect-ratio: 1;
+            background: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #999;
+        }
+        
+        .photo-item .remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .location-info {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .location-info.active {
+            display: block;
+        }
+        
+        .location-coords {
+            font-family: monospace;
+            font-size: 14px;
+            color: #2e7d32;
+            margin-bottom: 5px;
+        }
+        
+        .location-accuracy {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .offline-queue {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: #2196F3;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .offline-queue.show {
+            display: flex;
+        }
+        
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        .btn-primary {
+            background: #FF6B35;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .help-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 15px;
+            }
+            
+            .type-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .media-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 18px;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .required {
+            color: #e74c3c;
+        }
+        
+        .field-counter {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <h1>
+                    <span>📡</span>
+                    Antenas Comunitarias
+                </h1>
+                <div class="sync-status">
+                    <div class="sync-indicator" id="syncIndicator"></div>
+                    <span id="syncText">Conectado</span>
+                </div>
+            </div>
+            <div class="location-bar">
+                <span>📍</span>
+                <span id="locationText">Obteniendo ubicación...</span>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="data-type-selector">
+                <h2>Selecciona el tipo de datos a recolectar:</h2>
+                <div class="type-grid">
+                    <div class="type-card" data-type="demografico">
+                        <span class="icon">👥</span>
+                        <div class="title">Reporte Demográfico</div>
+                        <div class="description">Población, grupos etarios, migración</div>
+                    </div>
+                    <div class="type-card" data-type="infraestructura">
+                        <span class="icon">🏗️</span>
+                        <div class="title">Estado de Infraestructura</div>
+                        <div class="description">Caminos, servicios básicos, edificaciones</div>
+                    </div>
+                    <div class="type-card" data-type="agricola">
+                        <span class="icon">🌾</span>
+                        <div class="title">Producción Agrícola</div>
+                        <div class="description">Cultivos, rendimientos, condiciones</div>
+                    </div>
+                    <div class="type-card" data-type="ambiental">
+                        <span class="icon">🌿</span>
+                        <div class="title">Condiciones Ambientales</div>
+                        <div class="description">Clima, recursos naturales, riesgos</div>
+                    </div>
+                    <div class="type-card" data-type="social">
+                        <span class="icon">🤝</span>
+                        <div class="title">Indicadores Sociales</div>
+                        <div class="description">Bienestar, necesidades, organizaciones</div>
+                    </div>
+                    <div class="type-card" data-type="economico">
+                        <span class="icon">💼</span>
+                        <div class="title">Actividad Económica</div>
+                        <div class="description">Empleo, ingresos, comercio local</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formulario Demográfico -->
+            <div class="data-form" id="form-demografico">
+                <div class="form-section">
+                    <h3>📊 Información Demográfica</h3>
+                    
+                    <div class="form-group">
+                        <label for="poblacion-total">Población Total Estimada <span class="required">*</span></label>
+                        <input type="number" id="poblacion-total" min="0" required>
+                        <div class="help-text">Número aproximado de habitantes en el área</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Distribución por Edad</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="edad-0-14">
+                                <label for="edad-0-14">0-14 años</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="edad-15-64">
+                                <label for="edad-15-64">15-64 años</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="edad-65plus">
+                                <label for="edad-65plus">65+ años</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="observaciones">Observaciones</label>
+                        <textarea id="observaciones" placeholder="Describe cualquier cambio notable en la población, patrones de migración, etc."></textarea>
+                        <div class="field-counter">0/500 caracteres</div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>📸 Evidencia y Ubicación</h3>
+                    
+                    <div class="media-section">
+                        <div class="media-buttons">
+                            <button class="media-btn" onclick="takePhoto()">
+                                📷 Tomar Foto
+                            </button>
+                            <button class="media-btn" onclick="getLocation()">
+                                📍 Obtener Ubicación
+                            </button>
+                        </div>
+                        
+                        <div class="photo-preview" id="photoPreview"></div>
+                        
+                        <div class="location-info" id="locationInfo">
+                            <div class="location-coords" id="coordinates">Lat: -33.4489, Lng: -70.6693</div>
+                            <div class="location-accuracy">Precisión: ±5 metros</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formularios similares para otros tipos se mostrarían aquí -->
+        </div>
+        
+        <div class="offline-queue" id="offlineQueue">
+            <span>⏳</span>
+            <span>3 registros pendientes de sincronizar</span>
+        </div>
+        
+        <div class="action-bar">
+            <button class="btn btn-secondary" onclick="saveDraft()">
+                💾 Guardar Borrador
+            </button>
+            <button class="btn btn-primary" id="submitBtn" onclick="submitData()" disabled>
+                📤 Enviar Datos
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        let selectedType = '';
+        let photos = [];
+        let currentLocation = null;
+        let isOnline = true;
+        let pendingData = [];
+        
+        // Simulación de estado de conectividad
+        function updateConnectionStatus() {
+            const indicator = document.getElementById('syncIndicator');
+            const text = document.getElementById('syncText');
+            const queue = document.getElementById('offlineQueue');
+            
+            // Simular cambios de conectividad
+            isOnline = Math.random() > 0.3;
+            
+            if (isOnline) {
+                indicator.className = 'sync-indicator';
+                text.textContent = 'Conectado';
+                queue.classList.remove('show');
+                
+                // Simular sincronización de datos pendientes
+                if (pendingData.length > 0) {
+                    indicator.className = 'sync-indicator pending';
+                    text.textContent = 'Sincronizando...';
+                    
+                    setTimeout(() => {
+                        pendingData = [];
+                        indicator.className = 'sync-indicator';
+                        text.textContent = 'Conectado';
+                    }, 3000);
+                }
+            } else {
+                indicator.className = 'sync-indicator offline';
+                text.textContent = 'Sin conexión';
+                if (pendingData.length > 0) {
+                    queue.classList.add('show');
+                }
+            }
+        }
+        
+        // Simular ubicación GPS
+        function updateLocation() {
+            const locations = [
+                "San Pedro de Atacama, Región de Antofagasta",
+                "Pucón, Región de La Araucanía",
+                "Castro, Región de Los Lagos",
+                "Villa O'Higgins, Región de Aysén"
+            ];
+            
+            const locationText = document.getElementById('locationText');
+            locationText.textContent = locations[Math.floor(Math.random() * locations.length)];
+        }
+        
+        // Manejar selección de tipo de datos
+        document.querySelectorAll('.type-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedType = this.dataset.type;
+                
+                // Mostrar formulario correspondiente
+                document.querySelectorAll('.data-form').forEach(form => form.classList.remove('active'));
+                const targetForm = document.getElementById(`form-${selectedType}`);
+                if (targetForm) {
+                    targetForm.classList.add('active');
+                }
+                
+                // Habilitar botón de envío
+                document.getElementById('submitBtn').disabled = false;
+                
+                // Scroll al formulario
+                targetForm.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+        
+        // Simular tomar foto
+        function takePhoto() {
+            const photoId = Date.now();
+            photos.push(photoId);
+            
+            const preview = document.getElementById('photoPreview');
+            const photoDiv = document.createElement('div');
+            photoDiv.className = 'photo-item';
+            photoDiv.innerHTML = `
+                📷
+                <button class="remove" onclick="removePhoto(${photoId})">×</button>
+            `;
+            preview.appendChild(photoDiv);
+            
+            // Activar botón de cámara
+            event.target.classList.add('active');
+            setTimeout(() => {
+                event.target.classList.remove('active');
+            }, 1000);
+        }
+        
+        // Remover foto
+        function removePhoto(photoId) {
+            photos = photos.filter(id => id !== photoId);
+            event.target.parentElement.remove();
+        }
+        
+        // Simular obtener ubicación
+        function getLocation() {
+            const locationInfo = document.getElementById('locationInfo');
+            const coords = document.getElementById('coordinates');
+            
+            // Simular coordenadas aleatorias de Chile
+            const lat = (-18 + Math.random() * (-56 + 18)).toFixed(4);
+            const lng = (-66 + Math.random() * (-75 + 66)).toFixed(4);
+            
+            coords.textContent = `Lat: ${lat}, Lng: ${lng}`;
+            locationInfo.classList.add('active');
+            
+            currentLocation = { lat, lng, accuracy: Math.floor(Math.random() * 10) + 3 };
+            
+            // Activar botón de ubicación
+            event.target.classList.add('active');
+            setTimeout(() => {
+                event.target.classList.remove('active');
+            }, 2000);
+        }
+        
+        // Contador de caracteres
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                const counter = this.nextElementSibling;
+                if (counter && counter.classList.contains('field-counter')) {
+                    const maxLength = 500;
+                    const currentLength = this.value.length;
+                    counter.textContent = `${currentLength}/${maxLength} caracteres`;
+                    
+                    if (currentLength > maxLength * 0.9) {
+                        counter.style.color = '#e74c3c';
+                    } else {
+                        counter.style.color = '#999';
+                    }
+                }
+            });
+        });
+        
+        // Guardar borrador
+        function saveDraft() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            
+            // Simular guardado
+            btn.innerHTML = '✅ Guardado';
+            btn.style.background = '#4CAF50';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+        
+        // Enviar datos
+        function submitData() {
+            if (!selectedType) {
+                alert('Por favor selecciona un tipo de datos');
+                return;
+            }
+            
+            const formData = {
+                type: selectedType,
+                timestamp: new Date().toISOString(),
+                location: currentLocation,
+                photos: photos.length,
+                data: getFormData()
+            };
+            
+            if (isOnline) {
+                // Envío directo
+                alert('✅ Datos enviados correctamente!\n\nLa información será procesada por nuestras Antenas Comunitarias para generar insights predictivos.');
+                resetForm();
+            } else {
+                // Agregar a cola offline
+                pendingData.push(formData);
+                alert('📱 Datos guardados localmente!\n\nSe sincronizarán automáticamente cuando tengas conexión.');
+                resetForm();
+                updateConnectionStatus();
+            }
+        }
+        
+        // Obtener datos del formulario activo
+        function getFormData() {
+            const activeForm = document.querySelector('.data-form.active');
+            if (!activeForm) return {};
+            
+            const data = {};
+            const inputs = activeForm.querySelectorAll('input, textarea, select');
+            
+            inputs.forEach(input => {
+                if (input.type === 'checkbox') {
+                    data[input.id] = input.checked;
+                } else {
+                    data[input.id] = input.value;
+                }
+            });
+            
+            return data;
+        }
+        
+        // Resetear formulario
+        function resetForm() {
+            document.querySelectorAll('.type-card').forEach(card => card.classList.remove('selected'));
+            document.querySelectorAll('.data-form').forEach(form => form.classList.remove('active'));
+            document.querySelectorAll('input, textarea').forEach(input => {
+                if (input.type === 'checkbox') {
+                    input.checked = false;
+                } else {
+                    input.value = '';
+                }
+            });
+            
+            selectedType = '';
+            photos = [];
+            currentLocation = null;
+            document.getElementById('photoPreview').innerHTML = '';
+            document.getElementById('locationInfo').classList.remove('active');
+            document.getElementById('submitBtn').disabled = true;
+            
+            // Scroll al inicio
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Inicializar
+        updateConnectionStatus();
+        updateLocation();
+        
+        // Actualizar estado cada 10 segundos
+        setInterval(updateConnectionStatus, 10000);
+        setInterval(updateLocation, 30000);
+        
+        // Simular datos offline al cargar
+        setTimeout(() => {
+            if (Math.random() > 0.7) {
+                pendingData = [
+                    { type: 'demografico', timestamp: new Date(Date.now() - 3600000).toISOString() },
+                    { type: 'infraestructura', timestamp: new Date(Date.now() - 1800000).toISOString() },
+                    { type: 'agricola', timestamp: new Date(Date.now() - 900000).toISOString() }
+                ];
+                updateConnectionStatus();
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

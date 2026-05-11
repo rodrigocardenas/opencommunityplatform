@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafíos del Pueblo - OCP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #4A90E2;
+            --color-primary-dark: #2E5C8A;
+            --color-secondary: #7C3AED;
+            --color-success: #10B981;
+            --color-warning: #F59E0B;
+            --color-bg: #0F1419;
+            --color-bg-secondary: #1A1F2E;
+            --color-bg-card: #1E2639;
+            --color-bg-hover: #252E42;
+            --color-text-dark: #E8EAED;
+            --color-text-light: #A0A7B0;
+            --color-text-muted: #6B7280;
+            --color-border: #2D3748;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0A0E14 0%, #1A1F2E 25%, #2E2A3F 50%, #1A1F2E 75%, #0A0E14 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--color-text-dark);
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: transparent;
+            position: relative;
+            box-shadow: none;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--color-bg-secondary) 0%, rgba(26, 31, 46, 0.8) 100%);
+            color: var(--color-text-dark);
+            padding: 24px 20px 16px;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--color-border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20px;
+            width: 100px;
+            height: 200%;
+            background: radial-gradient(circle, rgba(74, 144, 226, 0.1) 0%, transparent 70%);
+            transform: rotate(15deg);
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--color-text-light);
+            transition: var(--transition);
+            border-radius: 8px;
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        .back-btn:hover {
+            color: var(--color-primary);
+            background: rgba(74, 144, 226, 0.15);
+            transform: translateX(-3px);
+        }
+
+        .module-title {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--color-text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--color-text-light);
+            font-weight: 500;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: var(--color-bg-card);
+            padding: 20px 20px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            gap: 12px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(74, 144, 226, 0.05);
+            transition: var(--transition);
+            border: 1px solid rgba(74, 144, 226, 0.1);
+        }
+
+        .stat-item:hover {
+            background: rgba(74, 144, 226, 0.12);
+            border-color: rgba(74, 144, 226, 0.2);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            background: var(--color-bg-card);
+            padding: 10px 20px 0;
+            border-bottom: 1px solid var(--color-border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 5px;
+            margin-bottom: -1px;
+        }
+
+        .tab {
+            padding: 10px 16px;
+            border: none;
+            background: none;
+            border-radius: 12px 12px 0 0;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            color: var(--color-text-light);
+            letter-spacing: 0.3px;
+        }
+
+        .tab:hover {
+            color: var(--color-text-dark);
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        .tab.active {
+            background: rgba(74, 144, 226, 0.12);
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-primary);
+            text-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+        }
+
+        .tab:not(.active) {
+            color: var(--color-text-light);
+        }
+
+        /* Challenge List */
+        .challenges-container {
+            padding: 20px;
+            padding-bottom: 100px;
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+        }
+
+        /* Featured Challenge */
+        .featured-challenge {
+            background: linear-gradient(135deg, var(--color-bg-card) 0%, rgba(30, 38, 57, 0.8) 100%);
+            border: 1px solid rgba(74, 144, 226, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15), inset 0 1px 0 rgba(74, 144, 226, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .featured-challenge::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(74, 144, 226, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: glow-pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .featured-badge {
+            background: linear-gradient(135deg, var(--color-primary) 0%, rgba(74, 144, 226, 0.9) 100%);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        .challenge-card {
+            background: var(--color-bg-card);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-border);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(74, 144, 226, 0.1), var(--shadow-md);
+            border-color: rgba(74, 144, 226, 0.2);
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 8px;
+        }
+
+        .challenge-category {
+            background: rgba(74, 144, 226, 0.08);
+            color: var(--color-primary);
+            padding: 6px 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(74, 144, 226, 0.3);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+
+        .challenge-category:hover {
+            background: rgba(74, 144, 226, 0.15);
+            border-color: rgba(74, 144, 226, 0.5);
+        }
+
+        .challenge-status {
+            padding: 6px 12px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--color-success);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+        }
+
+        .status-voting {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--color-warning);
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+        }
+
+        .status-completed {
+            background: rgba(107, 114, 128, 0.1);
+            color: var(--color-text-light);
+            box-shadow: 0 2px 8px rgba(107, 114, 128, 0.05);
+        }
+
+        .challenge-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--color-text-dark);
+            margin-bottom: 8px;
+            line-height: 1.35;
+            letter-spacing: -0.3px;
+        }
+
+        .challenge-title a {
+            color: inherit;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .challenge-title a:hover {
+            color: var(--color-primary);
+        }
+
+        .challenge-description {
+            font-size: 14px;
+            color: var(--color-text-light);
+            line-height: 1.5;
+            margin-bottom: 15px;
+            letter-spacing: 0.2px;
+        }
+
+        .challenge-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--color-text-muted);
+            margin-bottom: 15px;
+            letter-spacing: 0.1px;
+        }
+
+        .meta-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .author {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            color: var(--color-text-light);
+        }
+
+        .time-ago {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .challenge-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .vote-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .vote-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border: 1px solid var(--color-border);
+            border-radius: 20px;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--color-text-light);
+            letter-spacing: 0.2px;
+        }
+
+        .vote-btn:hover {
+            border-color: var(--color-primary);
+            background: rgba(74, 144, 226, 0.08);
+            color: var(--color-primary);
+            transform: translateY(-1px);
+        }
+
+        .vote-btn.voted {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        }
+
+        .vote-btn.voted:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 144, 226, 0.5);
+        }
+
+        .vote-count {
+            font-weight: 700;
+            color: var(--color-primary);
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 18px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-comment {
+            background: rgba(74, 144, 226, 0.08);
+            color: var(--color-primary);
+            border-color: rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-comment:hover {
+            background: rgba(74, 144, 226, 0.15);
+            border-color: var(--color-primary);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn-share {
+            background: rgba(16, 185, 129, 0.08);
+            color: var(--color-success);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-share:hover {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--color-success);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(74, 144, 226, 0.45), 0 0 0 0 rgba(74, 144, 226, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(74, 144, 226, 0.55), 0 0 20px rgba(124, 58, 237, 0.3);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* FAB Tooltip */
+        .fab-tooltip {
+            position: absolute;
+            right: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+            color: var(--color-text-dark);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .fab:hover .fab-tooltip {
+            opacity: 1;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: var(--color-bg-secondary);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 20px;
+            border-radius: 12px;
+            transition: var(--transition);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-text-muted);
+        }
+
+        .nav-item.active {
+            background: rgba(74, 144, 226, 0.12);
+            color: var(--color-primary);
+            box-shadow: inset 0 0 8px rgba(74, 144, 226, 0.1);
+        }
+
+        .nav-item:not(.active):hover {
+            color: var(--color-text-light);
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 24px;
+            color: var(--color-text-light);
+            min-height: calc(100vh - 380px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .empty-icon {
+            font-size: 56px;
+            margin-bottom: 12px;
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--color-text-dark);
+            letter-spacing: -0.3px;
+        }
+
+        .empty-description {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--color-text-light);
+            max-width: 280px;
+            letter-spacing: 0.2px;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .header {
+                padding: 20px 16px 12px;
+            }
+
+            .module-title {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .header {
+                padding: 18px 14px 10px;
+            }
+            
+            .module-title {
+                font-size: 20px;
+                font-weight: 700;
+                gap: 6px;
+            }
+            
+            .back-btn {
+                font-size: 12px;
+                padding: 6px 10px;
+                margin-bottom: 8px;
+            }
+            
+            .stats-bar {
+                padding: 14px 12px;
+                gap: 6px;
+            }
+
+            .stat-item {
+                padding: 10px 8px;
+                border-radius: 10px;
+                gap: 4px;
+            }
+
+            .stat-number {
+                font-size: 18px;
+            }
+            
+            .stat-label {
+                font-size: 9px;
+                letter-spacing: 0.6px;
+            }
+
+            .filter-tabs {
+                padding: 8px 12px 0;
+            }
+
+            .tab {
+                padding: 8px 12px;
+                font-size: 12px;
+                border-radius: 10px 10px 0 0;
+            }
+            
+            .challenges-container {
+                padding: 12px;
+                padding-bottom: 100px;
+                max-height: calc(100vh - 250px);
+            }
+
+            .featured-challenge {
+                padding: 16px;
+                border-radius: 14px;
+                margin-bottom: 16px;
+            }
+
+            .featured-badge {
+                font-size: 10px;
+                padding: 6px 10px;
+                margin-bottom: 10px;
+            }
+
+            .challenge-card {
+                padding: 14px;
+                border-radius: 14px;
+            }
+
+            .challenge-header {
+                gap: 4px;
+            }
+
+            .challenge-category,
+            .challenge-status {
+                font-size: 10px;
+                padding: 4px 8px;
+                border-radius: 12px;
+            }
+
+            .challenge-title {
+                font-size: 15px;
+                font-weight: 700;
+            }
+
+            .challenge-description {
+                font-size: 13px;
+                line-height: 1.4;
+                margin-bottom: 12px;
+            }
+
+            .challenge-meta {
+                font-size: 11px;
+                margin-bottom: 12px;
+                gap: 8px;
+            }
+
+            .meta-left {
+                gap: 10px;
+            }
+
+            .challenge-actions {
+                padding-top: 10px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .vote-btn {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+
+            .vote-count {
+                font-size: 13px;
+            }
+
+            .action-btn {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+
+            .fab {
+                width: 54px;
+                height: 54px;
+                font-size: 22px;
+                bottom: 85px;
+                right: 16px;
+            }
+
+            .bottom-nav {
+                padding: 10px 0;
+            }
+
+            .nav-item {
+                padding: 6px 12px;
+                gap: 3px;
+                font-size: 10px;
+            }
+
+            .nav-icon {
+                font-size: 18px;
+            }
+
+            .empty-state {
+                padding: 60px 16px;
+                min-height: calc(100vh - 350px);
+            }
+
+            .empty-icon {
+                font-size: 48px;
+                margin-bottom: 10px;
+            }
+
+            .empty-title {
+                font-size: 16px;
+            }
+
+            .empty-description {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .stats-bar {
+                padding: 12px 10px;
+                gap: 4px;
+            }
+
+            .stat-item {
+                padding: 8px 6px;
+            }
+
+            .stat-number {
+                font-size: 16px;
+            }
+
+            .stat-label {
+                font-size: 8px;
+            }
+
+            .challenges-container {
+                padding: 10px;
+            }
+
+            .challenge-card {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+            min-height: calc(100vh - 300px);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--color-border);
+            border-top: 3px solid var(--color-primary);
+            border-right: 3px solid var(--color-secondary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="back-btn">← Volver al Dashboard</div>
+                <div class="module-title">
+                    🎯 Desafíos del Pueblo
+                </div>
+                <div class="subtitle">Propuestas y problemáticas comunitarias</div>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number">23</div>
+                <div class="stat-label">Desafíos Totales</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">8</div>
+                <div class="stat-label">En Votación</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">156</div>
+                <div class="stat-label">Votos Este Mes</div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <div class="tabs-container">
+                <button class="tab active">Todos</button>
+                <button class="tab">En Votación</button>
+                <button class="tab">En Curso</button>
+                <button class="tab">Completados</button>
+            </div>
+        </div>
+
+        <!-- Challenges List -->
+        <div class="challenges-container">
+            <!-- Featured Challenge -->
+            <div class="featured-challenge">
+                <div class="featured-badge">
+                    🏆 Más Votado
+                </div>
+                <div class="challenge-header">
+                    <div class="challenge-category">Infraestructura</div>
+                    <div class="challenge-status status-active">En Curso</div>
+                </div>
+                <div class="challenge-title"><a href="ruta-del-cambio-module.html" class="module-link">Huerto Comunitario</a></div>
+                <div class="challenge-description">
+                    Crear un huerto comunitario para producir alimentos frescos y saludables para la comunidad.
+                </div>
+                <div class="challenge-meta">
+                    <div class="meta-left">
+                        <div class="author">👤 Ana Morales</div>
+                        <div class="time-ago">🕒 Hace 5 días</div>
+                    </div>
+                </div>
+                <div class="challenge-actions">
+                    <div class="vote-section">
+                        <button class="vote-btn voted">
+                            👍 Apoyado
+                        </button>
+                        <div class="vote-count">45 votos</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn btn-comment">💬 12</button>
+                        <button class="action-btn btn-share">↗️</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regular Challenges -->
+            <div class="challenge-card">
+                <div class="challenge-header">
+                    <div class="challenge-category">Medio Ambiente</div>
+                    <div class="challenge-status status-voting">En Votación</div>
+                </div>
+                <div class="challenge-title">Plan de Reciclaje Comunitario</div>
+                <div class="challenge-description">
+                    Propuesta para crear puntos de reciclaje en diferentes sectores del pueblo y organizar campañas de educación ambiental.
+                </div>
+                <div class="challenge-meta">
+                    <div class="meta-left">
+                        <div class="author">👤 Carlos Mendoza</div>
+                        <div class="time-ago">🕒 Hace 2 días</div>
+                    </div>
+                </div>
+                <div class="challenge-actions">
+                    <div class="vote-section">
+                        <button class="vote-btn">
+                            👍 Apoyar
+                        </button>
+                        <div class="vote-count">28 votos</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn btn-comment">💬 7</button>
+                        <button class="action-btn btn-share">↗️</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-header">
+                    <div class="challenge-category">Seguridad</div>
+                    <div class="challenge-status status-voting">En Votación</div>
+                </div>
+                <div class="challenge-title">Mejorar Iluminación en Calles</div>
+                <div class="challenge-description">
+                    Varias calles del sector norte necesitan mejor iluminación nocturna para mayor seguridad de los vecinos.
+                </div>
+                <div class="challenge-meta">
+                    <div class="meta-left">
+                        <div class="author">👤 Patricia López</div>
+                        <div class="time-ago">🕒 Hace 1 día</div>
+                    </div>
+                </div>
+                <div class="challenge-actions">
+                    <div class="vote-section">
+                        <button class="vote-btn">
+                            👍 Apoyar
+                        </button>
+                        <div class="vote-count">19 votos</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn btn-comment">💬 4</button>
+                        <button class="action-btn btn-share">↗️</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-header">
+                    <div class="challenge-category">Educación</div>
+                    <div class="challenge-status status-voting">En Votación</div>
+                </div>
+                <div class="challenge-title">Talleres Digitales para Adultos Mayores</div>
+                <div class="challenge-description">
+                    Crear espacios de aprendizaje tecnológico para que los adultos mayores puedan usar smartphones y computadores.
+                </div>
+                <div class="challenge-meta">
+                    <div class="meta-left">
+                        <div class="author">👤 Miguel Hernández</div>
+                        <div class="time-ago">🕒 Hace 3 días</div>
+                    </div>
+                </div>
+                <div class="challenge-actions">
+                    <div class="vote-section">
+                        <button class="vote-btn voted">
+                            👍 Apoyado
+                        </button>
+                        <div class="vote-count">15 votos</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn btn-comment">💬 9</button>
+                        <button class="action-btn btn-share">↗️</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-header">
+                    <div class="challenge-category">Salud</div>
+                    <div class="challenge-status status-completed">Completado</div>
+                </div>
+                <div class="challenge-title">Campaña de Vacunación Móvil</div>
+                <div class="challenge-description">
+                    Coordinación con el consultorio para traer unidades móviles de vacunación al pueblo.
+                </div>
+                <div class="challenge-meta">
+                    <div class="meta-left">
+                        <div class="author">👤 Rosa Vega</div>
+                        <div class="time-ago">🕒 Completado hace 1 semana</div>
+                    </div>
+                </div>
+                <div class="challenge-actions">
+                    <div class="vote-section">
+                        <div class="vote-count">✅ 32 votos</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn btn-comment">💬 15</button>
+                        <button class="action-btn btn-share">↗️</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <div class="fab">
+            ✏️
+            <div class="fab-tooltip">Proponer Desafío</div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <a href="ocp-inicia-proyecto.html" class="nav-item">
+                <div class="nav-icon">📊</div>
+                <div class="nav-label">Nuevo  Proyecto</div>
+            </a>
+            <div class="nav-item active">
+                <div class="nav-icon">🎯</div>
+                <div class="nav-label">Desafíos</div>
+            </div>
+            <a href="ocp-antenas-comunitarias.html" class="nav-item">
+                <div class="nav-icon">📡</div>
+                <div class="nav-label">Antenas</div>
+            </a>
+            <a href="ocp-puente-datos.html" class="nav-item">
+                <div class="nav-icon">🔗</div>
+                <div class="nav-label">Datos</div>
+            </a>
+            <a href="ruta-del-cambio-module.html" class="nav-item">
+                <div class="nav-icon">📋</div>
+                <div class="nav-label">Ruta</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Simple interactivity for demo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vote buttons functionality
+            const voteButtons = document.querySelectorAll('.vote-btn:not(.voted)');
+            
+            voteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const voteCount = this.parentNode.querySelector('.vote-count');
+                    let currentVotes = parseInt(voteCount.textContent);
+                    
+                    if (this.classList.contains('voted')) {
+                        // Remove vote
+                        this.classList.remove('voted');
+                        this.innerHTML = '👍 Apoyar';
+                        voteCount.textContent = (currentVotes - 1) + ' votos';
+                    } else {
+                        // Add vote
+                        this.classList.add('voted');
+                        this.innerHTML = '👍 Apoyado';
+                        voteCount.textContent = (currentVotes + 1) + ' votos';
+                    }
+                });
+            });
+
+            // Tab functionality
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // FAB click
+            const fab = document.querySelector('.fab');
+            fab.addEventListener('click', function() {
+                alert('Abrir formulario para proponer nuevo desafío');
+            });
+        });
+    </script>
+</body>
+</html>
