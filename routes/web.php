@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
     // Panel Administrativo (Punto de acceso a Módulos 1, 3, 4, 6)
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/antenas', [\App\Http\Controllers\Admin\AntenaController::class, 'index'])->name('admin.antenas');
     });
 });
 

@@ -23,10 +23,10 @@ export default function AdminLayout({ children, title, user }: PropsWithChildren
 
     const navItems = [
         { name: 'Dashboard', icon: LayoutDashboard, href: route('admin.dashboard'), active: route().current('admin.dashboard') },
-        { name: 'Mapa Territorial', icon: MapIcon, href: '#', tag: 'F2' },
+        { name: 'Antena IA', icon: Bell, href: route('admin.antenas'), active: route().current('admin.antenas'), tag: 'PREDICTIVE' },
         { name: 'Kiosco Pulso Local', icon: Database, href: route('pulso.kiosk') },
+        { name: 'Mapa Territorial', icon: MapIcon, href: '#', tag: 'F2' },
         { name: 'Reportes', icon: FileText, href: '#' },
-        { name: 'Alertas', icon: Bell, href: '#' },
         { name: 'Configuración', icon: Settings, href: '#' },
     ];
 
