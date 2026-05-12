@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
         Route::get('/antenas', [\App\Http\Controllers\Admin\AntenaController::class, 'index'])->name('admin.antenas');
+        Route::get('/puente', [\App\Http\Controllers\Admin\PuenteDatosController::class, 'index'])->name('admin.puente');
     });
 });
 

@@ -8,7 +8,8 @@ import {
     Bell, 
     Settings, 
     Menu, 
-    X
+    X,
+    Link as LinkIcon
 } from 'lucide-react';
 
 import ThemeToggle from '@/Components/ThemeToggle';
@@ -24,6 +25,7 @@ export default function AdminLayout({ children, title, user }: PropsWithChildren
     const navItems = [
         { name: 'Dashboard', icon: LayoutDashboard, href: route('admin.dashboard'), active: route().current('admin.dashboard') },
         { name: 'Antena IA', icon: Bell, href: route('admin.antenas'), active: route().current('admin.antenas'), tag: 'PREDICTIVE' },
+        { name: 'Puente de Datos', icon: LinkIcon, href: route('admin.puente'), active: route().current('admin.puente'), tag: 'EXT' },
         { name: 'Kiosco Pulso Local', icon: Database, href: route('pulso.kiosk') },
         { name: 'Mapa Territorial', icon: MapIcon, href: '#', tag: 'F2' },
         { name: 'Reportes', icon: FileText, href: '#' },
