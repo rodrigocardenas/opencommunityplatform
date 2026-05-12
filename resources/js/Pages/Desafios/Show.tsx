@@ -1,6 +1,6 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, Link } from '@inertiajs/react';
-import { ChevronLeft, MapPin, Calendar, ThumbsUp, MessageCircle, Share2, Award } from 'lucide-react';
+import { ChevronLeft, MapPin, Calendar, ThumbsUp, MessageCircle, Share2, Award, Zap, ShieldCheck } from 'lucide-react';
 import Timeline from '@/Components/Desafios/Timeline';
 
 interface Task {
@@ -151,6 +151,50 @@ export default function Show({ challenge, steps }: Props) {
                                     <button className="w-full bg-blue-500 text-white border-2 border-white/20 font-black py-2 rounded-xl text-xs uppercase tracking-widest hover:bg-blue-400 transition-colors">Sumarme</button>
                                 </div>
                                 <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Transparency Section (Open Government) */}
+                    {challenge.is_project && (
+                        <div className="mb-8">
+                            <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.4em] mb-6 px-2 flex items-center gap-3">
+                                Transparencia de Fondos
+                                <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800"></div>
+                            </h3>
+                            
+                            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm">
+                                <div className="p-5 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                                    <div className="flex items-center gap-2">
+                                        <ShieldCheck size={18} className="text-blue-600" />
+                                        <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">Portal de Probidad</span>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-slate-500">Última boleta: 12 Mayo</span>
+                                </div>
+                                <div className="p-0">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr className="border-b border-slate-100 dark:border-slate-800">
+                                                <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Ítem</th>
+                                                <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Monto</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="text-xs">
+                                            <tr className="border-b border-slate-100 dark:border-slate-800/50">
+                                                <td className="p-4 text-slate-600 dark:text-slate-300 font-medium">Materiales de construcción (Ferretería Central)</td>
+                                                <td className="p-4 text-slate-900 dark:text-white font-black text-right">$45.000</td>
+                                            </tr>
+                                            <tr className="border-b border-slate-100 dark:border-slate-800/50">
+                                                <td className="p-4 text-slate-600 dark:text-slate-300 font-medium">Alquiler de maquinaria (Pala mecánica)</td>
+                                                <td className="p-4 text-slate-900 dark:text-white font-black text-right">$80.000</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className="p-4 bg-blue-500 text-white flex justify-between items-center">
+                                    <span className="text-xs font-black uppercase tracking-widest">Inversión Social Total</span>
+                                    <span className="text-lg font-black">$125.000</span>
+                                </div>
                             </div>
                         </div>
                     )}
