@@ -42,4 +42,9 @@ class Challenge extends Model
     {
         return $this->hasMany(ProjectExpense::class);
     }
+
+    public function steps()
+    {
+        return $this->hasMany(ProjectStep::class);
+    }
 }

@@ -9,35 +9,7 @@ class PuenteDatosService
      */
     public function getExternalResources()
     {
-        return [
-            [
-                'id' => 1,
-                'provider' => 'Ministerio de Vivienda',
-                'program' => 'Subsidio de Aislamiento Térmico',
-                'category' => 'Vivienda',
-                'target_population' => 'Familias vulnerables',
-                'budget_available' => '$500,000,000',
-                'status' => 'Convocatoria Abierta'
-            ],
-            [
-                'id' => 2,
-                'provider' => 'ONG Techo',
-                'program' => 'Viviendas de Emergencia',
-                'category' => 'Vivienda',
-                'target_population' => 'Campamentos',
-                'budget_available' => '15 unidades',
-                'status' => 'Activo'
-            ],
-            [
-                'id' => 3,
-                'provider' => 'Banco de Alimentos',
-                'program' => 'Red de Ollas Comunes',
-                'category' => 'Alimentación',
-                'target_population' => 'Comedores comunitarios',
-                'budget_available' => '5 toneladas/mes',
-                'status' => 'Activo'
-            ]
-        ];
+        return \App\Models\ExternalResource::all();
     }
 
     /**

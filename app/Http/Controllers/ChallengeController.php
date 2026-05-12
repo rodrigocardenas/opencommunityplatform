@@ -77,62 +77,12 @@ class ChallengeController extends Controller
      */
     public function show(Challenge $challenge)
     {
-        $challenge->load(['user', 'community']);
-
-        // Mock data para el Timeline
-        $steps = [
-            [
-                'id' => 1,
-                'title' => 'Diagnóstico Participativo',
-                'description' => 'Recopilación de datos y testimonios de la comunidad sobre la problemática.',
-                'status' => 'completed',
-                'phase' => 'Fase 1',
-                'responsible' => 'Comité Vecinal',
-                'tasks' => [
-                    ['id' => 1, 'text' => 'Reunión inicial con vecinos', 'completed' => true],
-                    ['id' => 2, 'text' => 'Levantamiento fotográfico', 'completed' => true],
-                ]
-            ],
-            [
-                'id' => 2,
-                'title' => 'Planificación de Soluciones',
-                'description' => 'Diseño técnico y presupuestario del proyecto comunitario.',
-                'status' => 'active',
-                'phase' => 'Fase 2',
-                'responsible' => 'Equipo Técnico OCP',
-                'tasks' => [
-                    ['id' => 3, 'text' => 'Cómputos métricos', 'completed' => true],
-                    ['id' => 4, 'text' => 'Búsqueda de financiamiento', 'completed' => false],
-                ]
-            ],
-            [
-                'id' => 3,
-                'title' => 'Ejecución de Obras',
-                'description' => 'Implementación física del proyecto en el territorio.',
-                'status' => 'pending',
-                'phase' => 'Fase 3',
-                'responsible' => 'Contratista / Comunidad',
-                'tasks' => [
-                    ['id' => 5, 'text' => 'Inicio de faena', 'completed' => false],
-                    ['id' => 6, 'text' => 'Supervisión técnica', 'completed' => false],
-                ]
-            ],
-            [
-                'id' => 4,
-                'title' => 'Entrega y Evaluación',
-                'description' => 'Inauguración y medición del impacto social generado.',
-                'status' => 'pending',
-                'phase' => 'Fase 4',
-                'responsible' => 'Comunidad',
-                'tasks' => [
-                    ['id' => 7, 'text' => 'Informe final de impacto', 'completed' => false],
-                ]
-            ]
-        ];
+        $challenge->load(['user', 'community', 'expenses', 'steps']);
 
         return Inertia::render('Desafios/Show', [
             'challenge' => $challenge,
-            'steps' => $steps
+            'expenses' => $challenge->expenses,
+            'steps' => $challenge->steps
         ]);
     }
 
