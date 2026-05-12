@@ -17,33 +17,29 @@ class FODAService
             'amenazas' => []
         ];
 
-        // Lógica simplificada para el prototipo
-        $fortalezasCount = 0;
-        $debilidadesCount = 0;
-
         foreach ($reports as $report) {
             $data = $report->data;
             
             if ($report->type === 'infraestructura') {
                 if (isset($data['status']) && $data['status'] === 'bueno') {
-                    $fortalezasCount++;
+                    $analysis['fortalezas'][] = 'Infraestructura en buen estado: ' . ($data['location'] ?? 'Sector General');
                 } else {
-                    $debilidadesCount++;
+                    $analysis['debilidades'][] = 'Falla de infraestructura detectada: ' . ($data['description'] ?? 'Vía dañada');
                 }
             }
             
             if ($report->type === 'ambiental') {
-                if (isset($data['risk']) && $data['risk'] === 'alto') {
-                    $analysis['amenazas'][] = 'Riesgo ambiental detectado: ' . ($data['description'] ?? 'Sequía/Incendio');
+                if (isset($data['gravedad']) && $data['gravedad'] === 'alta') {
+                    $analysis['amenazas'][] = 'Riesgo crítico: ' . ($data['problema'] ?? 'Incendio/Inundación');
                 }
             }
         }
 
-        // Mocking some data if not enough reports
-        $analysis['fortalezas'] = array_merge(['Fuerte cohesión comunitaria', 'Liderazgo vecinal activo'], $fortalezasCount > 2 ? ['Infraestructura resiliente'] : []);
-        $analysis['oportunidades'] = ['Proyectos de financiamiento externos', 'Crecimiento de comercio local'];
-        $analysis['debilidades'] = array_merge(['Acceso limitado a agua potable', 'Falta de iluminación pública'], $debilidadesCount > 2 ? ['Deterioro vial'] : []);
-        $analysis['amenazas'] = array_merge(['Cambio climático (Sequía)', 'Migración descontrolada'], $analysis['amenazas']);
+        // Si no hay suficientes reportes, añadir bases del territorio
+        if (empty($analysis['fortalezas'])) $analysis['fortalezas'] = ['Cohesión vecinal sólida', 'Liderazgo territorial'];
+        if (empty($analysis['oportunidades'])) $analysis['oportunidades'] = ['Convenios con ONGs (Módulo 4)', 'Fondos concursables estatales'];
+        if (empty($analysis['debilidades'])) $analysis['debilidades'] = ['Necesidad de digitalización local'];
+        if (empty($analysis['amenazas'])) $analysis['amenazas'] = ['Cambio climático regional'];
 
         return $analysis;
     }

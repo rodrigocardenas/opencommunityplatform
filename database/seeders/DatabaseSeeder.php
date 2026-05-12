@@ -133,5 +133,19 @@ class DatabaseSeeder extends Seeder
             'budget_available' => '5.000 árboles',
             'status' => 'Activo'
         ]);
+
+        // Desafíos sin cobertura (Generarán "Holes" en el Gap Analysis)
+        \App\Models\Challenge::create([
+            'user_id' => $user->id,
+            'community_id' => $community->id,
+            'title' => 'Necesidad de Apoyo Psicológico',
+            'description' => 'Aumento de ansiedad en jóvenes del sector.',
+            'category' => 'Salud Mental',
+            'status' => 'pending',
+            'address' => 'Barrio Alto',
+            'lat' => 4.6150,
+            'lng' => -74.0850,
+            'is_project' => false
+        ]);
     }
 }

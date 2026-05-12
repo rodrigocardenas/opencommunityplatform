@@ -17,22 +17,36 @@ class PuenteDatosService
      */
     public function getGapAnalysis()
     {
-        return [
-            'vulnerability_holes' => [
-                [
-                    'area' => 'Salud Mental',
-                    'need_level' => 'Extremo',
+        $challenges = \App\Models\Challenge::selectRaw('category, count(*) as count')
+            ->groupBy('category')
+            ->get();
+            
+        $resources = \App\Models\ExternalResource::selectRaw('category, count(*) as count')
+            ->groupBy('category')
+            ->get();
+
+        $holes = [];
+        $covered = 0;
+        $totalNeeds = $challenges->sum('count');
+
+        foreach ($challenges as $challenge) {
+            $resourceCount = $resources->where('category', $challenge->category)->first()?->count ?? 0;
+            
+            if ($resourceCount === 0) {
+                $holes[] = [
+                    'area' => $challenge->category,
+                    'need_level' => $challenge->count > 5 ? 'Extremo' : 'Alto',
                     'resource_availability' => 'Nulo',
-                    'recommendation' => 'Contactar Red de Psicólogos Voluntarios.'
-                ],
-                [
-                    'area' => 'Acceso a Agua',
-                    'need_level' => 'Alto',
-                    'resource_availability' => 'Bajo (Solo camiones aljibe)',
-                    'recommendation' => 'Postular a fondos de mejora de APR.'
-                ]
-            ],
-            'matching_efficiency' => 65 // Porcentaje de necesidades cubiertas por programas actuales
+                    'recommendation' => 'Urgente: Buscar convenios en ' . $challenge->category
+                ];
+            } else {
+                $covered += min($challenge->count, $resourceCount);
+            }
+        }
+
+        return [
+            'vulnerability_holes' => $holes,
+            'matching_efficiency' => $totalNeeds > 0 ? round(($covered / $totalNeeds) * 100) : 100
         ];
     }
 }
