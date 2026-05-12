@@ -20,7 +20,12 @@ class Challenge extends Model
         'lng',
         'votes_count',
         'user_id',
-        'community_id'
+        'community_id',
+        'is_project',
+        'funding_goal',
+        'funding_raised',
+        'volunteers_needed',
+        'volunteers_count'
     ];
 
     public function user()

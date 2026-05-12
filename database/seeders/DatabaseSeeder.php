@@ -28,11 +28,25 @@ class DatabaseSeeder extends Seeder
             'lng' => -74.0817,
         ]);
 
-        \App\Models\Challenge::factory(10)->create([
+        \App\Models\Challenge::factory(5)->create([
             'user_id' => $user->id,
             'community_id' => $community->id,
             'lat' => function() { return 4.6097 + (rand(-100, 100) / 10000); },
             'lng' => function() { return -74.0817 + (rand(-100, 100) / 10000); },
+            'is_project' => true,
+            'funding_goal' => 500000,
+            'funding_raised' => 125000,
+            'volunteers_needed' => 10,
+            'volunteers_count' => 4,
+            'status' => 'in_progress'
+        ]);
+
+        \App\Models\Challenge::factory(5)->create([
+            'user_id' => $user->id,
+            'community_id' => $community->id,
+            'lat' => function() { return 4.6097 + (rand(-100, 100) / 10000); },
+            'lng' => function() { return -74.0817 + (rand(-100, 100) / 10000); },
+            'is_project' => false
         ]);
     }
 }
