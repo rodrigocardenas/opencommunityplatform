@@ -86,6 +86,18 @@ class ChallengeController extends Controller
         ]);
     }
 
+    public function vote(Challenge $challenge)
+    {
+        $userId = auth()->id() ?? \App\Models\User::first()->id;
+        
+        \App\Models\Vote::updateOrCreate([
+            'user_id' => $userId,
+            'challenge_id' => $challenge->id
+        ]);
+
+        return back()->with('success', '¡Gracias por tu voto! Tu prioridad ha sido registrada.');
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

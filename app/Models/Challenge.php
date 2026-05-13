@@ -52,4 +52,9 @@ class Challenge extends Model
     {
         return $this->hasMany(Donation::class);
     }
+
+    public function votes()
+    {
+        return $this->hasMany(Vote::class);
+    }
 }

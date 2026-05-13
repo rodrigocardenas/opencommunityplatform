@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\AntenaController;
+use App\Http\Controllers\MarketplaceController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -41,6 +42,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/antenas/create/{type}', [AntenaController::class, 'create'])->name('antenas.create');
     Route::post('/antenas', [AntenaController::class, 'store'])->name('antenas.store');
 
+    // Módulo 2 (Actualizado): Desafíos
+    Route::get('/challenges', [ChallengeController::class, 'index'])->name('challenges.index');
+    Route::get('/challenges/create', [ChallengeController::class, 'create'])->name('challenges.create');
+    Route::post('/challenges', [ChallengeController::class, 'store'])->name('challenges.store');
+    Route::get('/challenges/{challenge}', [ChallengeController::class, 'show'])->name('challenges.show');
+    Route::post('/challenges/{challenge}/vote', [ChallengeController::class, 'vote'])->name('challenges.vote');
+
     // Panel Administrativo (Punto de acceso a Módulos 1, 3, 4, 6)
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -48,5 +56,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/puente', [\App\Http\Controllers\Admin\PuenteDatosController::class, 'index'])->name('admin.puente');
     });
 });
+
+// Marketplace
+Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace.index');
+Route::get('/marketplace/{slug}', [MarketplaceController::class, 'show'])->name('marketplace.show');
 
 require __DIR__.'/auth.php';

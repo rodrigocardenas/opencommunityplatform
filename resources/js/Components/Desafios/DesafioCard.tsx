@@ -1,5 +1,5 @@
 import { MessageSquare, Share2, ThumbsUp } from 'lucide-react';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 
 interface DesafioCardProps {
     challenge: {
@@ -15,6 +15,13 @@ interface DesafioCardProps {
 }
 
 export default function DesafioCard({ challenge }: DesafioCardProps) {
+    const handleVote = (e: React.MouseEvent) => {
+        e.preventDefault();
+        router.post(route('challenges.vote', challenge.id), {}, {
+            preserveScroll: true,
+        });
+    };
+
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'pending': return 'bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-500 border-amber-200 dark:border-amber-500/30';
@@ -60,8 +67,11 @@ export default function DesafioCard({ challenge }: DesafioCardProps) {
             </div>
             
             <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800">
-                <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-wider">
-                    <ThumbsUp size={14} />
+                <button 
+                    onClick={handleVote}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 transition-all active:scale-95 text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-wider"
+                >
+                    <ThumbsUp size={14} className={challenge.votes_count > 0 ? 'fill-blue-500 text-blue-500' : ''} />
                     <span>{challenge.votes_count} Votos</span>
                 </button>
                 

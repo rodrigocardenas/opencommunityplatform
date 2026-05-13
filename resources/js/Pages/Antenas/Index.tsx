@@ -3,6 +3,9 @@ import { Head, Link } from '@inertiajs/react';
 import { Wifi, WifiOff, RefreshCw, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+import { SyncService } from '@/Services/SyncService';
+import axios from 'axios';
+
 interface Category {
     id: string;
     title: string;
@@ -16,22 +19,47 @@ interface Props {
 }
 
 export default function Index({ categories }: Props) {
-    const [isOnline, setIsOnline] = useState(true);
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
     const [isSyncing, setIsSyncing] = useState(false);
+    const [pendingCount, setPendingCount] = useState(0);
 
-    // Simulate connectivity changes
+    // Monitor connectivity and sync
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (Math.random() > 0.8) {
-                setIsOnline(prev => !prev);
+        const handleStatusChange = () => setIsOnline(navigator.onLine);
+        window.addEventListener('online', handleStatusChange);
+        window.addEventListener('offline', handleStatusChange);
+
+        const syncInterval = setInterval(async () => {
+            setPendingCount(SyncService.getReports().length);
+            
+            if (navigator.onLine && SyncService.hasPendingReports() && !isSyncing) {
+                setIsSyncing(true);
+                const reports = SyncService.getReports();
+                
+                for (const report of reports) {
+                    try {
+                        await axios.post(route('antenas.store'), report);
+                        SyncService.removeReport(report.id);
+                        console.log('Reporte sincronizado con éxito');
+                    } catch (error) {
+                        console.error('Error al sincronizar reporte', error);
+                    }
+                }
+                
+                setPendingCount(SyncService.getReports().length);
+                setIsSyncing(false);
             }
-        }, 10000);
-        return () => clearInterval(interval);
-    }, []);
+        }, 5000);
+
+        return () => {
+            window.removeEventListener('online', handleStatusChange);
+            window.removeEventListener('offline', handleStatusChange);
+            clearInterval(syncInterval);
+        };
+    }, [isSyncing]);
 
     const handleSync = () => {
-        setIsSyncing(true);
-        setTimeout(() => setIsSyncing(false), 2000);
+        // Trigger manual sync if needed, but interval handles it
     };
 
     return (
@@ -88,19 +116,20 @@ export default function Index({ categories }: Props) {
                         </div>
                     </div>
 
-                    {/* Pending Sync Floating Button (Optional simulation) */}
-                    {!isOnline && (
+                    {/* Pending Sync Floating Button (Real Data) */}
+                    {pendingCount > 0 && (
                         <div className="fixed bottom-24 right-5 left-5 max-w-md mx-auto z-50">
-                            <button 
-                                onClick={handleSync}
-                                className="w-full bg-blue-600 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between border border-blue-400/30 animate-bounce"
-                            >
+                            <div className="w-full bg-blue-600 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between border border-blue-400/30">
                                 <div className="flex items-center gap-3">
                                     <RefreshCw className={`w-5 h-5 ${isSyncing ? 'animate-spin' : ''}`} />
-                                    <span className="text-sm font-bold uppercase tracking-wider">3 reportes pendientes</span>
+                                    <span className="text-sm font-bold uppercase tracking-wider">
+                                        {pendingCount} {pendingCount === 1 ? 'reporte pendiente' : 'reportes pendientes'}
+                                    </span>
                                 </div>
-                                <span className="text-[10px] bg-blue-500/50 px-2 py-1 rounded-lg">Sincronizar ahora</span>
-                            </button>
+                                <span className="text-[10px] bg-blue-500/50 px-2 py-1 rounded-lg">
+                                    {isSyncing ? 'Sincronizando...' : 'Esperando Conexión'}
+                                </span>
+                            </div>
                         </div>
                     )}
                 </div>

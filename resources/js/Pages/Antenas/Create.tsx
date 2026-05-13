@@ -6,6 +6,7 @@ import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
+import { SyncService } from '@/Services/SyncService';
 
 interface Props {
     type: string;
@@ -15,6 +16,7 @@ export default function Create({ type }: Props) {
     const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
     const [isLocating, setIsLocating] = useState(false);
     const [isDraftSaved, setIsDraftSaved] = useState(false);
+    const [showOfflineAlert, setShowOfflineAlert] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
         type: type,
@@ -301,6 +303,18 @@ export default function Create({ type }: Props) {
                         <div className="mb-6 bg-blue-500/10 border border-blue-500/20 text-blue-400 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
                             <CheckCircle size={20} />
                             <span className="text-xs font-bold uppercase">Borrador guardado localmente</span>
+                        </div>
+                    )}
+
+                    {showOfflineAlert && (
+                        <div className="mb-6 bg-amber-500/20 border border-amber-500/50 text-amber-500 p-6 rounded-3xl flex flex-col gap-2 animate-in zoom-in duration-300">
+                            <div className="flex items-center gap-3">
+                                <WifiOff size={24} />
+                                <span className="text-sm font-black uppercase tracking-tight">Sin Conexión</span>
+                            </div>
+                            <p className="text-xs font-bold text-amber-200/70">
+                                Reporte guardado en la memoria de la Antena. Se enviará automáticamente cuando recuperes la señal.
+                            </p>
                         </div>
                     )}
 

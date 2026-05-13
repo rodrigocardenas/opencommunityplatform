@@ -143,6 +143,48 @@ class DatabaseSeeder extends Seeder
         $antenaService = new \App\Services\AntenaService();
         $antenaService->analyzeAndGenerateAlerts();
 
+        // Módulo 7: Marketplace de Economía Local (Piloto Futaleufú)
+        $pilotBusinesses = [
+            [
+                'name' => 'Eco-Hospedaje El Espolón',
+                'category' => 'naturaleza',
+                'description' => 'Alojamiento sustentable con vista al río Espolón. Desayunos orgánicos incluidos.',
+                'whatsapp' => '56912345678'
+            ],
+            [
+                'name' => 'Rafting Futaleufú Pro',
+                'category' => 'entretencion',
+                'description' => 'Guías certificados internacionalmente. Descenso de clase IV y V en el río más salvaje del mundo.',
+                'whatsapp' => '56987654321'
+            ],
+            [
+                'name' => 'Sabores de la Patagonia',
+                'category' => 'comida',
+                'description' => 'Cocina de autor con ingredientes 100% locales. Especialidad en cordero al palo.',
+                'whatsapp' => '56955544433'
+            ],
+            [
+                'name' => 'Telares de Futaleufú',
+                'category' => 'patrimonio',
+                'description' => 'Artesanía en lana de oveja hilada a mano. Diseños ancestrales patagónicos.',
+                'whatsapp' => '56922211100'
+            ]
+        ];
+
+        foreach ($pilotBusinesses as $biz) {
+            \App\Models\Business::create([
+                'user_id' => $user->id,
+                'name' => $biz['name'],
+                'slug' => \Illuminate\Support\Str::slug($biz['name']),
+                'description' => $biz['description'],
+                'category' => $biz['category'],
+                'contact_whatsapp' => $biz['whatsapp'],
+                'contact_phone' => $biz['whatsapp'],
+                'status' => 'active',
+                'is_featured' => true
+            ]);
+        }
+
         // Módulo 4: Recursos Externos
         \App\Models\ExternalResource::create([
             'provider' => 'Ministerio de Vivienda',
