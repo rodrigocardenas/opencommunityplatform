@@ -22,10 +22,16 @@ class ProjectService
     }
 
     /**
-     * Simula una donación al proyecto.
+     * Registra una donación real al proyecto.
      */
-    public function contribute(Challenge $challenge, float $amount)
+    public function contribute(Challenge $challenge, float $amount, $userId = null)
     {
+        \App\Models\Donation::create([
+            'user_id' => $userId ?? auth()->id(),
+            'challenge_id' => $challenge->id,
+            'amount' => $amount
+        ]);
+
         $challenge->increment('funding_raised', $amount);
         return $challenge;
     }

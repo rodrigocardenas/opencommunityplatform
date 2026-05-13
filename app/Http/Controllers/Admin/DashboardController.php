@@ -15,17 +15,22 @@ class DashboardController extends Controller
     public function index(FODAService $fodaService)
     {
         $foda = $fodaService->generateAnalysis();
-        // Métricas reales
+        
+        // Métricas básicas
         $challengesTotal = Challenge::count();
-        $challengesResolved = Challenge::where('status', 'resolved')->count();
         $challengesPending = Challenge::where('status', '!=', 'resolved')->count();
         $totalReports = \App\Models\CommunityReport::count();
         
-        // Métricas simuladas (como lo pide el prototipo)
-        $poblacionTotal = 2847 + $totalReports; // Influenciado por reportes
-        $familias = 847;
-        $produccion = 4490;
-        $recursosHidricos = 462;
+        // Indicadores Territoriales (Dinámicos)
+        $latestIndicators = \App\Models\TerritorialIndicator::latest('measured_at')
+            ->get()
+            ->groupBy('name')
+            ->map(fn($group) => $group->first()->value);
+
+        $poblacionTotal = $latestIndicators['poblacion'] ?? 0;
+        $familias = $latestIndicators['familias'] ?? 0;
+        $produccion = $latestIndicators['produccion'] ?? 0;
+        $recursosHidricos = $latestIndicators['recursos_hidricos'] ?? 0;
 
         // Datos para gráfico de barras (Desafíos por Categoría)
         $challengesByCategory = Challenge::selectRaw('category, count(*) as count')
@@ -38,14 +43,18 @@ class DashboardController extends Controller
                 ];
             });
 
-        // Datos para gráfico de líneas (Evolución Simulada)
-        $demographicEvolution = [
-            ['name' => 'Ene', 'poblacion' => 2700, 'familias' => 800],
-            ['name' => 'Feb', 'poblacion' => 2750, 'familias' => 810],
-            ['name' => 'Mar', 'poblacion' => 2780, 'familias' => 825],
-            ['name' => 'Abr', 'poblacion' => 2800, 'familias' => 830],
-            ['name' => 'May', 'poblacion' => 2847, 'familias' => 847],
-        ];
+        // Evolución Demográfica (Histórica real)
+        $demographicEvolution = \App\Models\TerritorialIndicator::whereIn('name', ['poblacion', 'familias'])
+            ->orderBy('measured_at')
+            ->get()
+            ->groupBy(fn($item) => $item->measured_at->format('M'))
+            ->map(function ($items, $month) {
+                return [
+                    'name' => $month,
+                    'poblacion' => $items->where('name', 'poblacion')->first()?->value ?? 0,
+                    'familias' => $items->where('name', 'familias')->first()?->value ?? 0,
+                ];
+            })->values();
 
         return Inertia::render('Admin/Dashboard', [
             'kpis' => [

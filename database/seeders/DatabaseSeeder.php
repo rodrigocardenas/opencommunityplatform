@@ -28,6 +28,42 @@ class DatabaseSeeder extends Seeder
             'lng' => -74.0817,
         ]);
 
+        // Indicadores Históricos para el Dashboard
+        $months = ['2026-01-01', '2026-02-01', '2026-03-01', '2026-04-01', '2026-05-01'];
+        $basePop = 2700;
+        $baseFam = 800;
+
+        foreach ($months as $index => $date) {
+            \App\Models\TerritorialIndicator::create([
+                'community_id' => $community->id,
+                'name' => 'poblacion',
+                'value' => $basePop + ($index * 35),
+                'unit' => 'personas',
+                'measured_at' => $date
+            ]);
+            \App\Models\TerritorialIndicator::create([
+                'community_id' => $community->id,
+                'name' => 'familias',
+                'value' => $baseFam + ($index * 12),
+                'unit' => 'hogares',
+                'measured_at' => $date
+            ]);
+            \App\Models\TerritorialIndicator::create([
+                'community_id' => $community->id,
+                'name' => 'produccion',
+                'value' => 4000 + ($index * 100),
+                'unit' => 'ton',
+                'measured_at' => $date
+            ]);
+            \App\Models\TerritorialIndicator::create([
+                'community_id' => $community->id,
+                'name' => 'recursos_hidricos',
+                'value' => 450 + rand(0, 50),
+                'unit' => 'l/s',
+                'measured_at' => $date
+            ]);
+        }
+
         $challenges = \App\Models\Challenge::factory(5)->create([
             'user_id' => $user->id,
             'community_id' => $community->id,
@@ -35,13 +71,15 @@ class DatabaseSeeder extends Seeder
             'lng' => function() { return -74.0817 + (rand(-100, 100) / 10000); },
             'is_project' => true,
             'funding_goal' => 500000,
-            'funding_raised' => 125000,
             'volunteers_needed' => 10,
             'volunteers_count' => 4,
             'status' => 'in_progress'
         ]);
 
+        $projectService = new \App\Services\ProjectService();
         foreach ($challenges as $challenge) {
+            $projectService->contribute($challenge, 125000, $user->id);
+            
             \App\Models\ProjectExpense::create([
                 'challenge_id' => $challenge->id,
                 'description' => 'Materiales de construcción (Compra inicial)',
@@ -86,34 +124,24 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Módulo 1 & 3: Reportes y Alertas
-        \App\Models\CommunityReport::create([
-            'user_id' => $user->id,
-            'community_id' => $community->id,
-            'type' => 'ambiental',
-            'data' => ['problema' => 'Acumulación de basura en canal', 'gravedad' => 'alta'],
-            'lat' => 4.6100,
-            'lng' => -74.0820
-        ]);
+        for ($i = 0; $i < 10; $i++) {
+            \App\Models\CommunityReport::create([
+                'user_id' => $user->id,
+                'community_id' => $community->id,
+                'type' => $i % 2 == 0 ? 'ambiental' : 'infraestructura',
+                'data' => [
+                    'problema' => $i % 2 == 0 ? 'Microbasural detectado' : 'Luminaria apagada',
+                    'gravedad' => 'alta',
+                    'location' => 'Sector ' . ($i < 5 ? 'Norte' : 'Sur')
+                ],
+                'lat' => 4.6097 + (rand(-100, 100) / 10000),
+                'lng' => -74.0817 + (rand(-100, 100) / 10000)
+            ]);
+        }
 
-        \App\Models\Alert::create([
-            'type' => 'risk',
-            'severity' => 'high',
-            'title' => 'Riesgo de Inundación Detectado',
-            'description' => 'Aumento crítico de reportes ambientales en la ribera del río.',
-            'prediction_date' => 'Próximos 10 días',
-            'probability' => 88,
-            'location' => 'Sector Norte'
-        ]);
-
-        \App\Models\Alert::create([
-            'type' => 'maintenance',
-            'severity' => 'medium',
-            'title' => 'Mantenimiento de Alumbrado Pendiente',
-            'description' => 'Se detecta un patrón de fallas en el cuadrante C-4.',
-            'prediction_date' => 'Próxima semana',
-            'probability' => 65,
-            'location' => 'Cuadrante C-4'
-        ]);
+        // Ejecutar motor de IA de Antena para generar alertas reales
+        $antenaService = new \App\Services\AntenaService();
+        $antenaService->analyzeAndGenerateAlerts();
 
         // Módulo 4: Recursos Externos
         \App\Models\ExternalResource::create([

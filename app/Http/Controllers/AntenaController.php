@@ -78,8 +78,13 @@ class AntenaController extends Controller
         ]);
 
         $validated['user_id'] = auth()->id() ?? \App\Models\User::first()->id;
+        $validated['community_id'] = $validated['community_id'] ?? \App\Models\Community::first()->id;
 
         CommunityReport::create($validated);
+
+        // Actualizar alertas predictivas en tiempo real
+        $antenaService = new \App\Services\AntenaService();
+        $antenaService->analyzeAndGenerateAlerts();
 
         return redirect()->route('antenas.index')->with('success', 'Reporte enviado con éxito.');
     }

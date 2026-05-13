@@ -77,19 +77,69 @@ export default function Create({ type }: Props) {
                                 id="poblacion" 
                                 type="number" 
                                 className="mt-1 block w-full" 
+                                value={data.data.total || ''}
                                 onChange={e => setData('data', { ...data.data, total: e.target.value })}
                             />
                         </div>
                         <div>
                             <InputLabel value="Grupos Etarios Predominantes" />
-                            <div className="grid grid-cols-2 gap-2 mt-2">
-                                {['0-14 años', '15-64 años', '65+ años'].map(age => (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                                {['Niños (0-14)', 'Jóvenes (15-29)', 'Adultos (30-64)', 'Mayores (65+)'].map(age => (
                                     <label key={age} className="flex items-center gap-2 p-3 bg-slate-900/50 border border-slate-800 rounded-xl cursor-pointer hover:border-blue-500/50 transition-colors">
-                                        <input type="checkbox" className="rounded bg-slate-950 border-slate-800 text-blue-500 focus:ring-blue-500" />
+                                        <input 
+                                            type="checkbox" 
+                                            className="rounded bg-slate-950 border-slate-800 text-blue-500 focus:ring-blue-500" 
+                                            onChange={e => {
+                                                const current = data.data.age_groups || [];
+                                                const next = e.target.checked ? [...current, age] : current.filter((a: string) => a !== age);
+                                                setData('data', { ...data.data, age_groups: next });
+                                            }}
+                                        />
                                         <span className="text-xs text-slate-300">{age}</span>
                                     </label>
                                 ))}
                             </div>
+                        </div>
+                    </div>
+                );
+            case 'infraestructura':
+                return (
+                    <div className="space-y-4">
+                        <div>
+                            <InputLabel value="Elemento Afectado" />
+                            <select 
+                                className="mt-1 block w-full bg-slate-950 border-slate-800 rounded-lg text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+                                onChange={e => setData('data', { ...data.data, element: e.target.value })}
+                            >
+                                <option value="">Seleccionar...</option>
+                                <option value="caminos">Caminos / Rutas</option>
+                                <option value="alumbrado">Alumbrado Público</option>
+                                <option value="agua">Red de Agua</option>
+                                <option value="electricidad">Tendal Eléctrico</option>
+                                <option value="plaza">Espacio Público / Plaza</option>
+                            </select>
+                        </div>
+                        <div>
+                            <InputLabel value="Estado de Gravedad" />
+                            <div className="grid grid-cols-3 gap-2 mt-2">
+                                {['Bajo', 'Medio', 'Crítico'].map(lvl => (
+                                    <button 
+                                        key={lvl}
+                                        type="button"
+                                        onClick={() => setData('data', { ...data.data, severity: lvl })}
+                                        className={`p-2 text-[10px] font-bold rounded-lg border transition-all ${data.data.severity === lvl ? 'bg-blue-600 border-blue-500 text-white' : 'bg-slate-900 border-slate-800 text-slate-400'}`}
+                                    >
+                                        {lvl}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div>
+                            <InputLabel value="Descripción de la Falla" />
+                            <textarea 
+                                className="mt-1 w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-white text-sm focus:border-blue-500 min-h-[80px]"
+                                onChange={e => setData('data', { ...data.data, description: e.target.value })}
+                            />
                         </div>
                     </div>
                 );
@@ -107,12 +157,110 @@ export default function Create({ type }: Props) {
                         </div>
                         <div>
                             <InputLabel value="Estado de la Cosecha" />
-                            <select className="mt-1 block w-full bg-slate-950 border-slate-800 rounded-lg text-white text-sm focus:border-blue-500 focus:ring-blue-500">
+                            <select 
+                                className="mt-1 block w-full bg-slate-950 border-slate-800 rounded-lg text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+                                onChange={e => setData('data', { ...data.data, stage: e.target.value })}
+                            >
                                 <option>Siembra</option>
                                 <option>Crecimiento</option>
                                 <option>Cosecha Próxima</option>
                                 <option>Finalizado</option>
                             </select>
+                        </div>
+                        <div>
+                            <InputLabel value="Presencia de Plagas" />
+                            <div className="flex gap-4 mt-2">
+                                {['No', 'Sí'].map(opt => (
+                                    <label key={opt} className="flex items-center gap-2 text-xs text-slate-300">
+                                        <input 
+                                            type="radio" 
+                                            name="plagas" 
+                                            className="bg-slate-950 border-slate-800 text-blue-500" 
+                                            onChange={() => setData('data', { ...data.data, pests: opt === 'Sí' })}
+                                        /> {opt}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+            case 'ambiental':
+                return (
+                    <div className="space-y-4">
+                        <div>
+                            <InputLabel value="Tipo de Alerta Ambiental" />
+                            <select 
+                                className="mt-1 block w-full bg-slate-950 border-slate-800 rounded-lg text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+                                onChange={e => setData('data', { ...data.data, hazard_type: e.target.value })}
+                            >
+                                <option value="">Seleccionar...</option>
+                                <option value="fuego">Riesgo de Incendio</option>
+                                <option value="agua">Inundación / Desborde</option>
+                                <option value="basura">Microbasural</option>
+                                <option value="contaminacion">Olores / Humo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <InputLabel value="Nivel de Riesgo Observado" />
+                            <input 
+                                type="range" min="1" max="5" 
+                                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer mt-4" 
+                                onChange={e => setData('data', { ...data.data, risk_level: e.target.value })}
+                            />
+                            <div className="flex justify-between text-[10px] text-slate-500 font-bold mt-1 uppercase">
+                                <span>Seguro</span>
+                                <span>Moderado</span>
+                                <span>Peligro</span>
+                            </div>
+                        </div>
+                    </div>
+                );
+            case 'social':
+                return (
+                    <div className="space-y-4">
+                        <div>
+                            <InputLabel value="Clima Comunitario" />
+                            <select 
+                                className="mt-1 block w-full bg-slate-950 border-slate-800 rounded-lg text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+                                onChange={e => setData('data', { ...data.data, sentiment: e.target.value })}
+                            >
+                                <option value="positivo">Positivo / Colaborativo</option>
+                                <option value="neutral">Estable / Neutral</option>
+                                <option value="tenso">Tenso / Conflictivo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <InputLabel value="Evento o Necesidad Detectada" />
+                            <textarea 
+                                className="mt-1 w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-white text-sm focus:border-blue-500 min-h-[80px]"
+                                placeholder="Ej: Asamblea vecinal, falta de transporte escolar..."
+                                onChange={e => setData('data', { ...data.data, event_detail: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                );
+            case 'economico':
+                return (
+                    <div className="space-y-4">
+                        <div>
+                            <InputLabel value="Actividad Local" />
+                            <select 
+                                className="mt-1 block w-full bg-slate-950 border-slate-800 rounded-lg text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+                                onChange={e => setData('data', { ...data.data, activity: e.target.value })}
+                            >
+                                <option value="normal">Actividad Normal</option>
+                                <option value="baja">Baja en el Comercio</option>
+                                <option value="alta">Alta Demanda / Feria</option>
+                            </select>
+                        </div>
+                        <div>
+                            <InputLabel value="Precio de Insumo Básico (Referencia)" />
+                            <TextInput 
+                                type="number" 
+                                className="mt-1 block w-full" 
+                                placeholder="Precio Pan / Harina / Combustible"
+                                onChange={e => setData('data', { ...data.data, price_ref: e.target.value })}
+                            />
                         </div>
                     </div>
                 );
