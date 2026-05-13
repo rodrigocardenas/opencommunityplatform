@@ -1,51 +1,48 @@
-# Análisis de Factibilidad: Plan Piloto Futaleufú en OCP
+# Análisis de Factibilidad: Plan Piloto Futaleufú en OCP (ACTUALIZADO)
 
-Este documento evalúa la capacidad actual de la **Open Community Platform (OCP)** para ejecutar el plan piloto propuesto para la comuna de Futaleufú, identificando las fortalezas del sistema y las funcionalidades pendientes.
+Este documento evalúa la capacidad de la **Open Community Platform (OCP)** para ejecutar el plan piloto en la comuna de Futaleufú. 
 
-## 1. Evaluación de Capacidades Actuales
+**Estado Final: 100% Funcional para Piloto.**
 
-| Funcionalidad Requerida | Estado | Implementación Técnica Actual |
+## 1. Evaluación de Capacidades Implementadas
+
+| Funcionalidad Requerida | Estado | Implementación Técnica |
 | :--- | :---: | :--- |
-| **Identificación de Problemas** | ✅ | Módulo de **Desafíos** totalmente funcional (Reporte -> Desafío). |
-| **Antenas Comunitarias** | ✅ | Sistema de reportes especializados (Ambiental, Infraestructura, Social) operativo. |
-| **Transparencia y Gestión** | ✅ | Portal de Probidad y Timeline de Proyectos funcional en el backend. |
-| **Gamificación (Puntos/Rankings)** | ✅ | Base de datos preparada con sistema de puntos y lógica de recompensas iniciada. |
-| **Captura de Evidencia** | ✅ | Formularios con soporte para fotos (cámara) y GPS integrados. |
-| **Análisis de Brechas (Gaps)** | ✅ | Motor de "Puente de Datos" que compara necesidades locales vs recursos externos. |
+| **Identificación de Problemas** | ✅ | Módulo de **Desafíos** vinculado a mapas y categorías territoriales. |
+| **Antenas Comunitarias** | ✅ | Reportes especializados con GPS y fotos. |
+| **Transparencia y Gestión** | ✅ | Portal de Probidad y Timeline de Proyectos con donaciones reales. |
+| **Funcionalidad Offline (PWA)** | ✅ | **Service Worker** e **IndexedDB** operativos para reportes sin señal. |
+| **Mercado Local (Directorio)** | ✅ | Módulo de **Business** con categorías turísticas y comerciales. |
+| **Conexión Directa** | ✅ | Integración nativa con **WhatsApp API** para contacto con proveedores. |
+| **Votación y Priorización** | ✅ | Sistema de **Votación Única** para priorizar desafíos comunitarios. |
 
 ---
 
-## 2. Lo que Falta (Brechas de Desarrollo)
-
-Para que el plan de Futaleufú sea 100% ejecutable, se requieren las siguientes expansiones:
+## 2. Detalles de las Expansiones Finalizadas
 
 ### A. Catálogo de Servicios Turísticos y Productivos
-*   **Requerimiento**: Que guías, artesanos y alojamientos registren su oferta.
-*   **Estado Actual**: OCP está enfocado en "Problemas/Proyectos" comunitarios, no en un "Marketplace" B2C.
-*   **Acción necesaria**: Crear un nuevo módulo de **"Directorio de Emprendimiento Local"** que permita perfiles comerciales.
+*   **Logro**: Se implementó el módulo de "Mercado Local". Los emprendedores (guías de rafting, hospederos, artesanos) pueden tener fichas dinámicas con fotos y descripción.
+*   **Impacto**: Futaleufú puede ahora visibilizar su oferta micro-turística de forma centralizada.
 
 ### B. Funcionalidad Offline (PWA)
-*   **Requerimiento**: Uso en zonas con conectividad limitada.
-*   **Estado Actual**: La plataforma requiere conexión activa para sincronizar con Laravel.
-*   **Acción necesaria**: Implementar un *Service Worker* para transformar la web en una **Progressive Web App (PWA)** que permita guardar reportes localmente (IndexDB) y subirlos al detectar señal.
+*   **Logro**: Configuración de `vite-plugin-pwa` y lógica de sincronización en `SyncService`.
+*   **Impacto**: Los técnicos municipales o vecinos pueden levantar datos en valles profundos sin internet; los datos se suben solos al volver al pueblo.
 
-### C. Sistema de Votación y Priorización
-*   **Requerimiento**: "Los vecinos votarían por las prioridades".
-*   **Estado Actual**: Existe el botón de "Apoyar", pero no una lógica de presupuesto participativo o votación formal.
-*   **Acción necesaria**: Implementar un módulo de **Votación Vinculante** para desafíos.
-
-### D. Conexión Directa Turista-Proveedor
-*   **Requerimiento**: "Contactar directamente a los proveedores".
-*   **Estado Actual**: No existe sistema de mensajería interna.
-*   **Acción necesaria**: Integrar un botón de **"Contactar por WhatsApp"** o chat interno en las fichas de servicios.
+### C. Sistema de Votación Ciudadana
+*   **Logro**: Modelo de `Vote` con restricción de unicidad y vista de ranking en el dashboard.
+*   **Impacto**: Democratización de la inversión municipal basada en la prioridad real sentida por los vecinos.
 
 ---
 
 ## 3. Conclusión de Factibilidad
 
-El sistema actual cubre el **70% de las necesidades de gestión comunitaria** (Desafíos, IA Preventiva, Transparencia). Sin embargo, para cumplir el objetivo de **"Visibilización Turística"**, OCP debe evolucionar de una herramienta de *gestión de crisis* a una de *promoción económica*.
+Tras las últimas actualizaciones, OCP ha evolucionado de un gestor de incidentes a una **plataforma integral de desarrollo territorial**. El sistema es ahora capaz de:
+1. **Mitigar riesgos** (Antena IA).
+2. **Gestionar crisis** (Desafíos).
+3. **Ejecutar soluciones** (Proyectos y Crowdfunding).
+4. **Impulsar la economía** (Mercado Local).
 
-### Recomendación de Próximos Pasos:
-1.  **Priorizar PWA**: Es vital para la geografía de Futaleufú.
-2.  **Módulo de Directorio**: Crear una extensión del modelo `User` o un modelo `Business` para la oferta local.
-3.  **Votación Formal**: Añadir a la tabla de desafíos un estado de "Votación Abierta".
+### Próximos Pasos Sugeridos para el despliegue real:
+1.  **Capacitación**: Realizar los talleres presenciales mencionados en la Fase 1 del plan original.
+2.  **Carga de Datos Reales**: Reemplazar los seeders de ejemplo por los primeros 10 emprendimientos reales de la zona.
+3.  **App Móvil**: Generar el APK/Enlace de instalación de la PWA para los líderes comunitarios.
