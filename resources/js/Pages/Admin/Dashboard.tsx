@@ -23,9 +23,19 @@ interface DashboardProps {
         debilidades: string[];
         amenazas: string[];
     };
+    pilot_stats: {
+        priorities: any[];
+        business: {
+            total: number;
+            active: number;
+            pending: number;
+        }
+    };
 }
 
-export default function Dashboard({ kpis, charts, foda }: DashboardProps) {
+import { Users, Home, Sprout, Droplets, Target, AlertCircle, ShoppingBag, ThumbsUp } from 'lucide-react';
+
+export default function Dashboard({ kpis, charts, foda, pilot_stats }: DashboardProps) {
     return (
         <AdminLayout title="Dashboard de Indicadores">
             
@@ -109,6 +119,73 @@ export default function Dashboard({ kpis, charts, foda }: DashboardProps) {
                         value={kpis.desafios_pendientes} 
                         icon={<AlertCircle size={24} />} 
                     />
+                </div>
+            </div>
+
+            {/* PILOT PLAN SECTION */}
+            <div className="mb-8">
+                <h2 className="text-lg font-black text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <Target className="text-blue-500" size={20} />
+                    Eje Plan Piloto (Futaleufú)
+                </h2>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Top Priorities */}
+                    <div className="lg:col-span-2 bg-[#1E2639] border border-slate-700/50 rounded-xl p-6 shadow-xl">
+                        <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                            <ThumbsUp size={16} className="text-blue-400" />
+                            Prioridades Ciudadanas (Más Votados)
+                        </h3>
+                        <div className="space-y-4">
+                            {pilot_stats.priorities.map((item, i) => (
+                                <div key={i} className="flex items-center justify-between p-4 bg-[#0F172A] rounded-xl border border-white/5 hover:border-blue-500/30 transition-all group">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 font-black text-xs">
+                                            #{i + 1}
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-bold text-white group-hover:text-blue-400 transition-colors">{item.title}</h4>
+                                            <span className="text-[10px] text-slate-500 uppercase font-black">{item.category}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-blue-600/10 rounded-full border border-blue-500/20">
+                                        <span className="text-xs font-black text-blue-400">{item.votes}</span>
+                                        <ThumbsUp size={12} className="text-blue-400" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Local Economy */}
+                    <div className="bg-[#1E2639] border border-slate-700/50 rounded-xl p-6 shadow-xl">
+                        <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                            <ShoppingBag size={16} className="text-emerald-400" />
+                            Estado del Mercado Local
+                        </h3>
+                        <div className="flex flex-col h-full">
+                            <div className="text-center py-8 border-b border-white/5 mb-6">
+                                <span className="text-4xl font-black text-white block mb-1">{pilot_stats.business.total}</span>
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Negocios Registrados</span>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center text-sm font-bold">
+                                    <span className="text-slate-400">Activos</span>
+                                    <span className="text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
+                                        {pilot_stats.business.active}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm font-bold">
+                                    <span className="text-slate-400">Pendientes</span>
+                                    <span className="text-amber-400 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/20">
+                                        {pilot_stats.business.pending}
+                                    </span>
+                                </div>
+                            </div>
+                            <button className="mt-auto w-full py-3 bg-slate-950 border border-white/10 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:bg-slate-800 transition-colors">
+                                Gestionar Directorio
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 

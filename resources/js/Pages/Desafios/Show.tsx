@@ -1,48 +1,23 @@
 import AppLayout from '@/Layouts/AppLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { ChevronLeft, MapPin, Calendar, ThumbsUp, MessageCircle, Share2, Award, Zap, ShieldCheck } from 'lucide-react';
 import Timeline from '@/Components/Desafios/Timeline';
 
-interface Task {
-    id: number;
-    text: string;
-    completed: boolean;
-}
-
-interface Step {
-    id: number;
-    title: string;
-    description: string;
-    status: 'completed' | 'active' | 'pending';
-    phase: string;
-    responsible: string;
-    tasks: Task[];
-}
-
-interface Challenge {
-    id: number;
-    title: string;
-    description: string;
-    category: string;
-    status: string;
-    address: string;
-    votes_count: number;
-    user?: { name: string };
-    is_project: boolean;
-    funding_goal: number;
-    funding_raised: number;
-    volunteers_needed: number;
-    volunteers_count: number;
-}
-
-interface Props {
-    challenge: Challenge;
-    steps: Step[];
-}
+// ... interfaces ...
 
 export default function Show({ challenge, steps }: Props) {
-    const progressPercentage = Math.round((steps.filter(s => s.status === 'completed').length / steps.length) * 100);
+    const progressPercentage = Math.round((steps.length > 0 ? steps.filter(s => s.status === 'completed').length / steps.length : 0) * 100);
     const fundingPercentage = challenge.funding_goal > 0 ? Math.round((challenge.funding_raised / challenge.funding_goal) * 100) : 0;
+
+    const handleContribute = () => {
+        router.post(route('projects.contribute', challenge.id), {
+            amount: 5000 // Monto simulado para el demo
+        }, { preserveScroll: true });
+    };
+
+    const handleJoin = () => {
+        router.post(route('projects.join', challenge.id), {}, { preserveScroll: true });
+    };
 
     return (
         <AppLayout>
@@ -131,7 +106,12 @@ export default function Show({ challenge, steps }: Props) {
                                     <div className="h-2 bg-white/20 rounded-full overflow-hidden">
                                         <div className="h-full bg-white transition-all duration-1000" style={{ width: `${fundingPercentage}%` }}></div>
                                     </div>
-                                    <button className="w-full mt-6 bg-white text-emerald-700 font-black py-2 rounded-xl text-xs uppercase tracking-widest hover:bg-emerald-50 transition-colors">Donar ahora</button>
+                                    <button 
+                                        onClick={handleContribute}
+                                        className="w-full mt-6 bg-white text-emerald-700 font-black py-2 rounded-xl text-xs uppercase tracking-widest hover:bg-emerald-50 transition-all active:scale-95 shadow-lg"
+                                    >
+                                        Donar ahora
+                                    </button>
                                 </div>
                                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
                             </div>
@@ -148,7 +128,12 @@ export default function Show({ challenge, steps }: Props) {
                                             <div key={i} className={`h-1.5 flex-1 rounded-full ${i < challenge.volunteers_count ? 'bg-white' : 'bg-white/20'}`}></div>
                                         ))}
                                     </div>
-                                    <button className="w-full bg-blue-500 text-white border-2 border-white/20 font-black py-2 rounded-xl text-xs uppercase tracking-widest hover:bg-blue-400 transition-colors">Sumarme</button>
+                                    <button 
+                                        onClick={handleJoin}
+                                        className="w-full bg-white text-blue-700 font-black py-2 rounded-xl text-xs uppercase tracking-widest hover:bg-blue-50 transition-all active:scale-95 shadow-lg"
+                                    >
+                                        Ser voluntario
+                                    </button>
                                 </div>
                                 <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
                             </div>

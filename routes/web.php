@@ -5,6 +5,7 @@ use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\AntenaController;
 use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\ProjectController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -48,6 +49,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/challenges', [ChallengeController::class, 'store'])->name('challenges.store');
     Route::get('/challenges/{challenge}', [ChallengeController::class, 'show'])->name('challenges.show');
     Route::post('/challenges/{challenge}/vote', [ChallengeController::class, 'vote'])->name('challenges.vote');
+
+    // Módulo 5: Proyectos (Aportes y Voluntarios)
+    Route::post('/projects/{challenge}/contribute', [ProjectController::class, 'contribute'])->name('projects.contribute');
+    Route::post('/projects/{challenge}/join', [ProjectController::class, 'join'])->name('projects.join');
 
     // Panel Administrativo (Punto de acceso a Módulos 1, 3, 4, 6)
     Route::prefix('admin')->group(function () {

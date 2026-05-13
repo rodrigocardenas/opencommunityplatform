@@ -56,6 +56,24 @@ class DashboardController extends Controller
                 ];
             })->values();
 
+        // Prioridades Votadas (Top 5)
+        $topPriorities = Challenge::withCount('votes')
+            ->orderBy('votes_count', 'desc')
+            ->take(5)
+            ->get()
+            ->map(fn($c) => [
+                'title' => $c->title,
+                'votes' => $c->votes_count,
+                'category' => $c->category
+            ]);
+
+        // Mercado Local
+        $businessStats = [
+            'total' => \App\Models\Business::count(),
+            'active' => \App\Models\Business::where('status', 'active')->count(),
+            'pending' => \App\Models\Business::where('status', 'pending')->count(),
+        ];
+
         return Inertia::render('Admin/Dashboard', [
             'kpis' => [
                 'poblacion' => $poblacionTotal,
@@ -69,6 +87,10 @@ class DashboardController extends Controller
             'charts' => [
                 'categories' => $challengesByCategory,
                 'demographic' => $demographicEvolution,
+            ],
+            'pilot_stats' => [
+                'priorities' => $topPriorities,
+                'business' => $businessStats
             ],
             'foda' => $foda
         ]);
